@@ -73,7 +73,8 @@ ReorderCorMat <- function(cormat){
   cormat <-cormat[hc$order, hc$order]
 }
 
-eliminated.teams <- c('Panama','Tunisia','Peru','Poland','Saudi Arabia','Egypt','South Korea','Australia','Nigeria','Iran','Costa Rica','Iceland','Germany','Morocco','Serbia','Senegal','Argentina','Portugal','Spain','Denmark','Mexico','Switzerland','Colombia','Uruguay','Brazil','Russia','Belgium')
+#eliminated.teams <- c('Panama','Tunisia','Peru','Poland','Saudi Arabia','Egypt','South Korea','Australia','Nigeria','Iran','Costa Rica','Iceland','Germany','Morocco','Serbia','Senegal','Argentina','Portugal','Spain','Denmark','Mexico','Switzerland','Colombia','Uruguay','Brazil','Russia','Belgium')
+eliminated.teams <- c()
 ```
 
 ```{r analysis, include=FALSE, cache=TRUE}
@@ -164,7 +165,7 @@ idx.good <- sapply(1:nrow(playoff.sf.gf.win), function(z) CountStringDiff(playof
 playoff.sf.gf.win.good <- playoff.sf.gf.win[idx.good,]
 
 #Possible qf, sf, gf, win combs.
-#Check the format of playoff.format to understand this. E.g. since we had France and Uruguay it is 1010 etc.
+#Check the format of playoff.format to understand this. E.g. since we had France and Uruguay WIN it is 1010 etc.
 idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "1010101010010110"
 playoff.qf.sf.gf.win <- data.frame(lapply(expand.grid(playoff.qf.outcomes[idx.playoff.qf.outcomes.remaining], apply(playoff.sf.gf.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.qf.sf.gf.win) <- c('Quarter','Semi')
@@ -203,22 +204,32 @@ diag(win.percs) <- NA
 <!-- As such, the most pivotal remaining variable will likely be picking goals scored in the third place game, which is worth 10 points (I am willing to admit mistakes were made). Eric wins if the number is 6 (unless Kane gets exactly one more goal, then Andrew), Giselle wins if the number is 5, Taehoon wins if it is 4, and Karen wins if it is 3. For 2,1, or 0, Eric and Giselle tie for first place. -->
 
 <!-- ```{r bonus, echo=FALSE, results='asis'} -->
+
 <!-- barplot(do.call(c, lapply(raw.bonus, `[`, 2, 2,)), names.arg=names(points.by.player), las=2, main='Total goals scored in 3rd place game', col=c('gray20','gray20','gray40','gray80','gray60','gray80','gray60','gray80')) -->
+
 <!-- legend("topright", c('WC 1986','WC 2002 and 2010','WC 1994 and 2006','WC 1990, 1998 and 2014'), pch=15, col=c('gray20','gray40','gray60','gray80')) -->
+
 <!-- barplot(do.call(c, lapply(raw.bonus, `[`, 1, 2,)), names.arg=names(points.by.player), las=2, main='Number of goals scored by golden boot', col=c('gray80',rep('gray20',6),'red')) -->
+
 <!-- legend("topleft", c('Kane +1 or Lukaku +3','Current leader (Kane)','Bold!'), pch=15, col=c('gray80','gray20','red')) -->
+
 <!-- golden.boot.pick <- data.frame(names(points.by.player), do.call(c, lapply(lapply(raw.bonus, names), function (z) z[2]))) -->
+
 <!-- names(golden.boot.pick) <- c('Who','Boot pick') -->
+
 <!-- kable(golden.boot.pick, -->
+
 <!--       row.names = FALSE) %>% -->
+
 <!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
+
 <!-- ``` -->
 
 ## Everyone
 
 Percentage of cases where you beat (or draw with) each player from all possible game outcomes.
 
-* (NB: non-symmetries are where two players tie.)
+-   (NB: non-symmetries are where two players tie.)
 
 ```{r corr, echo=FALSE, fig.align="center"}
 melted_cormat <- melt(win.percs, na.rm = TRUE)
@@ -243,9 +254,10 @@ theme(
   axis.ticks = element_blank())
 ```
 
-## Grand winner 
+## Grand winner
 
 Number of paths from which each player can win, without bonus points (golden boot etc.):
+
 ```{r num of paths, echo=FALSE, results='asis'}
 all.player.perc <- all.player.wins/sum(all.player.wins)
 all.player.wins <- all.player.wins[rev(order(all.player.wins))]
@@ -254,6 +266,7 @@ kable(all.player.wins, col.names = c('Player','Num of paths to glory')) %>%
 ```
 
 <!-- * Eric needs France to make the final, and he will be drawn with Giselle for first. (Necessitates that Karen and Tiago lose). -->
+
 <!-- * Giselle wins if Belgium beats France, unless bonuses turn the tables -->
 
 <!-- The only bonus which should make a difference is the number of goals scored in the third place game. 5 and Giselle has wrapped it up. 6 and Eric jumps up to take it out cleanly with Giselle relegated to 2nd place after spending the entire tournament at the top. 4 and victory is Taehoon's in the most remarkable of comebacks. 3 and first and second go to Karen then Tiago. -->
@@ -272,7 +285,6 @@ kable(overall.tally[rev(order(overall.tally$Total)),],
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-
 ```{r total.tally, echo=FALSE, fig.align="center"}
 total.tally.graphdata <- melt(total.total, id.vars = 'Name')
 total.tally.graphdata$variable <- as.numeric(total.tally.graphdata$variable)
@@ -290,11 +302,9 @@ ggplot(data=total.tally.graphdata,
   theme(axis.text.x=element_text(angle = 0, vjust=.5, size=10))
 ```
 
-
 # Crowd favourites
 
 ## Overall
-
 
 ```{r crowdsource.finals, echo=FALSE}
 all.elim <- do.call(rbind, raw.elim)
@@ -307,7 +317,6 @@ kable(StrikethroughTable(elim.count[elim.count$Quarter.Finals > 0,], eliminated.
       ) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
-
 
 ## Final Picks
 
@@ -333,7 +342,6 @@ kable(finals.and.winner[c(6,1,2,7,3,5,8,4),],
       col.names = c("Grand Final Pick","Cup Pick")) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
-
 
 # Group stage
 
