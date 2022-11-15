@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/397787/ba1544cdc9ae4d9daf67ab081d22b232
+bundleId: https://api.rpubs.com/api/v1/document/397787/ba1544cdc9ae4d9daf67ab081d22b232
+url: http://rpubs.com/thelilster/397787
+when: 1531254403.3168
