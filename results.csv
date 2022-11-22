@@ -1,49 +1,49 @@
 ﻿Match,Home,Away,Home Goals,Away Goals,"Result (H, A, D)"
-1,Russia,Saudi Arabia,5,0,H
-2,Egypt,Uruguay,0,1,A
-3,Morocco,Iran,0,1,A
-4,Portugal,Spain,3,3,D
-5,France,Australia,2,1,H
-6,Argentina,Iceland,1,1,D
-7,Peru,Denmark,0,1,A
-8,Croatia,Nigeria,2,0,H
-9,Costa Rica,Serbia,0,1,A
-10,Germany,Mexico,0,1,A
-11,Brazil,Switzerland,1,1,D
-12,Sweden,South Korea,1,0,H
-13,Belgium,Panama,3,0,H
-14,Tunisia,England,1,2,A
-15,Colombia,Japan,1,2,A
-16,Poland,Senegal,1,2,A
-17,Russia,Egypt,3,1,H
-18,Portugal,Morocco,1,0,H
-19,Uruguay,Saudi Arabia,1,0,H
-20,Iran,Spain,0,1,A
-21,Denmark,Australia,1,1,D
-22,France,Peru,1,0,H
-23,Argentina,Croatia,0,3,A
-24,Brazil,Costa Rica,2,0,H
-25,Nigeria,Iceland,2,0,H
-26,Serbia,Switzerland,1,2,A
-27,Belgium,Tunisia,5,2,H
-28,South Korea,Mexico,1,2,A
-29,Germany,Sweden,2,1,H
-30,England,Panama,6,1,H
-31,Japan,Senegal,2,2,D
-32,Poland,Colombia,0,3,A
-33,Saudi Arabia,Egypt,2,1,H
-34,Uruguay,Russia,3,0,H
-35,Iran,Portugal,1,1,D
-36,Spain,Morocco,2,2,D
-37,Australia,Peru,0,2,A
-38,Denmark,France,0,0,D
-39,Iceland,Croatia,1,2,A
-40,Nigeria,Argentina,1,2,A
-41,Mexico,Sweden,0,3,A
-42,South Korea,Germany,2,0,H
-43,Serbia,Brazil,0,2,A
-44,Switzerland,Costa Rica,2,2,D
-45,Japan,Poland,0,1,A
-46,Senegal,Colombia,0,1,A
-47,England,Belgium,0,1,A
-48,Panama,Tunisia,1,2,A
+1,Qatar,Ecuador,0,2,A
+2,England,Iran,1,0,H
+3,Senegal,Netherlands,0,2,A
+4,USA,Wales,1,1,D
+5,Argentina,Saudi Arabia,,,
+6,Denmark,Tunisia,,,
+7,Mexico,Poland,,,
+8,France,Australia,,,
+9,Morocco,Croatia,,,
+10,Germany,Japan,,,
+11,Spain,Costa Rica,,,
+12,Belgium,Canada,,,
+13,Switzerland,Cameroon,,,
+14,Uruguay,South Korea,,,
+15,Portugal,Ghana,,,
+16,Brazil,Serbia,,,
+17,Wales,Iran,,,
+18,Qatar,Senegal,,,
+19,Netherlands,Ecuador,,,
+20,England,USA,,,
+21,Tunisia,Australia,,,
+22,Poland,Saudi Arabia,,,
+23,France,Denmark,,,
+24,Argentina,Mexico,,,
+25,Japan,Costa Rica,,,
+26,Belgium,Morocco,,,
+27,Croatia,Canada,,,
+28,Spain,Germany,,,
+29,Cameroon,Serbia,,,
+30,South Korea,Ghana,,,
+31,Brazil,Switzerland,,,
+32,Portugal,Uruguay,,,
+33,Ecuador,Senegal,,,
+34,Netherlands,Qatar,,,
+35,Iran,USA,,,
+36,Wales,England,,,
+37,Tunisia,France,,,
+38,Australia,Denmark,,,
+39,Poland,Argentina,,,
+40,Saudi Arabia,Mexico,,,
+41,Croatia,Belgium,,,
+42,Canada,Morocco,,,
+43,Japan,Spain,,,
+44,Costa Rica,Germany,,,
+45,South Korea,Portugal,,,
+46,Ghana,Uruguay,,,
+47,Serbia,Switzerland,,,
+48,Cameroon,Brazil,,,
