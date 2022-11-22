@@ -140,9 +140,9 @@ total.total <- total.total[rev(order(total.total$Winner)),]
 total.total <- total.total[,c('Name','Start','Group.Points','Group.Finish','Round.of.16','Quarter.Finals','Semi.Finals','Final','Winner')]
 
 playoff.format <- read.csv('playoff_format.csv', stringsAsFactors = FALSE)
-raw.elim.ordered <- lapply(raw.elim, function(z) z[c(4,7,11,13,17,22,25,30,2,8,10,14,20,24,26,29),c(6:9)])
-x.qf <- c('10', '01')
-x.sf <- c('1000','0100','0010','0001')
+raw.elim.ordered <- lapply(raw.elim, function(z) z[c(4,7,11,13,17,22,25,30,2,8,10,14,20,24,26,29),c(6:9)]) #see round_16_format.png. since the "bracket" for round of 16 is Uruguay v Portugal and France v Argentina... we select an ordered table of Uruguay, Portugal, France, Argentina, so the possibility for the SF is 1000, 0100, 0010, 0001 etc. 
+x.qf <- c('10', '01') # for every game, this is the combination of team 1 win vs team 2 win
+x.sf <- c('1000','0100','0010','0001') # only one of each 4 can make the sf
 x.gf <- sapply(0:7, function(z) paste(c(rep(0,z),1,rep(0,7-z)),collapse=''))
 x.win <- sapply(0:15, function(z) paste(c(rep(0,z),1,rep(0,15-z)),collapse=''))
 playoff.qf.outcomes <- apply(permutations(n=2,r=8,v=x.qf,repeats.allowed=T), 1, function(x) paste(x, collapse=''))
@@ -156,7 +156,8 @@ idx.good <- sapply(1:nrow(playoff.gf.and.win), function(z) CountStringDiff(playo
 playoff.gf.and.win.good <- playoff.gf.and.win[idx.good,]
 
 #Possible sf, gf, win combs.
-idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,8) == "00100010" & substr(playoff.sf.outcomes,13,16) == "0010"
+#idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,8) == "00100010" & substr(playoff.sf.outcomes,13,16) == "0010"
+idx.playoff.sf.outcomes.remaining <- rep(TRUE, 256)
 playoff.sf.gf.win <- data.frame(lapply(expand.grid(playoff.sf.outcomes[idx.playoff.sf.outcomes.remaining], apply(playoff.gf.and.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.sf.gf.win) <- c('Semi','Final')
 playoff.sf.gf.win$Winner <- sapply(playoff.sf.gf.win$Final, SecondString)
@@ -166,7 +167,9 @@ playoff.sf.gf.win.good <- playoff.sf.gf.win[idx.good,]
 
 #Possible qf, sf, gf, win combs.
 #Check the format of playoff.format to understand this. E.g. since we had France and Uruguay WIN it is 1010 etc.
-idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "1010101010010110"
+#idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "1010101010010110" when its over
+#idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,8) == "00100010" & substr(playoff.qf.outcomes,13,16) == "0010" when its partially over
+idx.playoff.qf.outcomes.remaining <- rep(TRUE, 256) #when nothing has been determined
 playoff.qf.sf.gf.win <- data.frame(lapply(expand.grid(playoff.qf.outcomes[idx.playoff.qf.outcomes.remaining], apply(playoff.sf.gf.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.qf.sf.gf.win) <- c('Quarter','Semi')
 playoff.qf.sf.gf.win$Final <- sapply(playoff.qf.sf.gf.win$Semi, SecondString)
@@ -234,17 +237,17 @@ Percentage of cases where you beat (or draw with) each player from all possible 
 ```{r corr, echo=FALSE, fig.align="center"}
 melted_cormat <- melt(win.percs, na.rm = TRUE)
 # Heatmap
-ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
+ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value*100))+
  geom_tile(color = "white")+
  scale_fill_gradient2(low = "red", high = "blue", mid = "gray75", 
-   midpoint = 0.5, limit = c(0,1), space = "Lab", 
-    name="Proportion\nof\npaths") +
+   midpoint = 50, limit = c(0,100), space = "Lab", 
+    name="Percentage\nof\npaths") +
   theme_minimal()+ # minimal theme
  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
     size = 12, hjust = 1))+
  coord_fixed()
 
-ggheatmap + geom_text(aes(Var2, Var1, label = round(value,3)), color = "white", size = 4) +
+ggheatmap + geom_text(aes(Var2, Var1, label = round(value*100,0)), color = "white", size = 4) +
   xlab('Beats this player') +
   ylab('Proportion of times this player') +
 theme(
@@ -261,7 +264,7 @@ Number of paths from which each player can win, without bonus points (golden boo
 ```{r num of paths, echo=FALSE, results='asis'}
 all.player.perc <- all.player.wins/sum(all.player.wins)
 all.player.wins <- all.player.wins[rev(order(all.player.wins))]
-kable(all.player.wins, col.names = c('Player','Num of paths to glory')) %>%
+kable(all.player.wins, col.names = c('Player','Number of paths to glory')) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
