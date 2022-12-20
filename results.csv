@@ -1,49 +1,49 @@
-﻿Match,Home,Away,Home Goals,Away Goals,"Result (H, A, D)"
+Match,Home,Away,Home Goals,Away Goals,"Winner (H, A, D)=(Home, Away, Draw)"
 1,Qatar,Ecuador,0,2,A
-2,England,Iran,1,0,H
+2,England,Iran,6,2,H
 3,Senegal,Netherlands,0,2,A
 4,USA,Wales,1,1,D
-5,Argentina,Saudi Arabia,,,
-6,Denmark,Tunisia,,,
-7,Mexico,Poland,,,
-8,France,Australia,,,
-9,Morocco,Croatia,,,
-10,Germany,Japan,,,
-11,Spain,Costa Rica,,,
-12,Belgium,Canada,,,
-13,Switzerland,Cameroon,,,
-14,Uruguay,South Korea,,,
-15,Portugal,Ghana,,,
-16,Brazil,Serbia,,,
-17,Wales,Iran,,,
-18,Qatar,Senegal,,,
-19,Netherlands,Ecuador,,,
-20,England,USA,,,
-21,Tunisia,Australia,,,
-22,Poland,Saudi Arabia,,,
-23,France,Denmark,,,
-24,Argentina,Mexico,,,
-25,Japan,Costa Rica,,,
-26,Belgium,Morocco,,,
-27,Croatia,Canada,,,
-28,Spain,Germany,,,
-29,Cameroon,Serbia,,,
-30,South Korea,Ghana,,,
-31,Brazil,Switzerland,,,
-32,Portugal,Uruguay,,,
-33,Ecuador,Senegal,,,
-34,Netherlands,Qatar,,,
-35,Iran,USA,,,
-36,Wales,England,,,
-37,Tunisia,France,,,
-38,Australia,Denmark,,,
-39,Poland,Argentina,,,
-40,Saudi Arabia,Mexico,,,
-41,Croatia,Belgium,,,
-42,Canada,Morocco,,,
-43,Japan,Spain,,,
-44,Costa Rica,Germany,,,
-45,South Korea,Portugal,,,
-46,Ghana,Uruguay,,,
-47,Serbia,Switzerland,,,
-48,Cameroon,Brazil,,,
+5,Argentina,Saudi Arabia,1,2,A
+6,Denmark,Tunisia,0,0,D
+7,Mexico,Poland,0,0,D
+8,France,Australia,4,1,H
+9,Morocco,Croatia,0,0,D
+10,Germany,Japan,1,2,A
+11,Spain,Costa Rica,7,0,H
+12,Belgium,Canada,1,0,H
+13,Switzerland,Cameroon,1,0,H
+14,Uruguay,South Korea,0,0,D
+15,Portugal,Ghana,3,2,H
+16,Brazil,Serbia,2,0,H
+17,Wales,Iran,0,2,A
+18,Qatar,Senegal,1,3,A
+19,Netherlands,Ecuador,1,1,D
+20,England,USA,0,0,D
+21,Tunisia,Australia,0,1,A
+22,Poland,Saudi Arabia,2,0,H
+23,France,Denmark,2,1,H
+24,Argentina,Mexico,2,0,H
+25,Japan,Costa Rica,0,1,A
+26,Belgium,Morocco,0,2,A
+27,Croatia,Canada,4,1,H
+28,Spain,Germany,1,1,D
+29,Cameroon,Serbia,3,3,D
+30,South Korea,Ghana,2,3,A
+31,Brazil,Switzerland,1,0,H
+32,Portugal,Uruguay,2,0,H
+33,Ecuador,Senegal,1,2,A
+34,Netherlands,Qatar,2,0,H
+35,Iran,USA,0,1,A
+36,Wales,England,0,3,A
+37,Tunisia,France,1,0,H
+38,Australia,Denmark,1,0,H
+39,Poland,Argentina,0,2,A
+40,Saudi Arabia,Mexico,1,2,A
+41,Croatia,Belgium,0,0,D
+42,Canada,Morocco,1,2,A
+43,Japan,Spain,2,1,H
+44,Costa Rica,Germany,2,4,A
+45,South Korea,Portugal,2,1,H
+46,Ghana,Uruguay,0,2,A
+47,Serbia,Switzerland,2,3,A
+48,Cameroon,Brazil,1,0,H

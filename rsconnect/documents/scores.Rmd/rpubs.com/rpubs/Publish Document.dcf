@@ -4,7 +4,8 @@ username:
 account: rpubs
 server: rpubs.com
 hostUrl: rpubs.com
-appId: https://api.rpubs.com/api/v1/document/397787/ba1544cdc9ae4d9daf67ab081d22b232
-bundleId: https://api.rpubs.com/api/v1/document/397787/ba1544cdc9ae4d9daf67ab081d22b232
-url: http://rpubs.com/thelilster/397787
-when: 1531254403.3168
+appId: https://api.rpubs.com/api/v1/document/973607/65d82c73842e45c4b355a23393237016
+bundleId: https://api.rpubs.com/api/v1/document/973607/65d82c73842e45c4b355a23393237016
+url: http://rpubs.com/andrewlilley/973607
+when: 1671401437.55378
+lastSyncTime: 1671401437.55379

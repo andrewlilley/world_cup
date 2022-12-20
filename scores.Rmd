@@ -1,8 +1,15 @@
 ---
-title: "Goooooool"
-author: "G3 Football Afficionados"
-date: "6/15/2018"
-output: html_document
+title: "World Cup 2022"
+author: ""
+date: "Updated on `r format(Sys.time(), '%d %b %H:%M')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
+    theme: lumen
 ---
 
 ```{r setup, include=FALSE}
@@ -15,14 +22,16 @@ require(ggplot2)
 require(reshape2)
 require(gtools)
 require(dplyr)
+require(tidyr)
 setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup/')
 
 AddPoints <- function(group.stage.entry, group.stage.truth){
   group.stage.entry$Outcome <- (group.stage.entry[,6] == group.stage.truth[,6]) * 1
   group.stage.entry$Score <- (group.stage.entry[,4] == group.stage.truth[,4] & 
                               group.stage.entry[,5] == group.stage.truth[,5]) * 1
-  group.stage.entry[1,]$Score <- 0
-  group.stage.entry$Points <- group.stage.entry$Outcome + group.stage.entry$Score * 2
+  group.stage.entry[1,]$Outcome <- 1
+  group.stage.entry[1,]$Score <- 1
+  group.stage.entry$Points <- group.stage.entry$Outcome + group.stage.entry$Score * 1
   group.stage.entry$Outcome <- cumsum(group.stage.entry$Outcome)
   group.stage.entry$Score <- cumsum(group.stage.entry$Score)
   group.stage.entry$Total <- cumsum(group.stage.entry$Points)
@@ -73,8 +82,8 @@ ReorderCorMat <- function(cormat){
   cormat <-cormat[hc$order, hc$order]
 }
 
-#eliminated.teams <- c('Panama','Tunisia','Peru','Poland','Saudi Arabia','Egypt','South Korea','Australia','Nigeria','Iran','Costa Rica','Iceland','Germany','Morocco','Serbia','Senegal','Argentina','Portugal','Spain','Denmark','Mexico','Switzerland','Colombia','Uruguay','Brazil','Russia','Belgium')
-eliminated.teams <- c()
+eliminated.teams <- c('Ecuador','Qatar','Iran','Wales','Mexico','Saudi Arabia','Tunisia','Denmark','Germany','Costa Rica','Belgium','Canada',
+'Cameroon','Serbia','Uruguay','Ghana','USA','Australia','Poland','Japan','Switzerland','Spain','Netherlands','Brazil','England','Portugal')
 ```
 
 ```{r analysis, include=FALSE, cache=TRUE}
@@ -84,8 +93,8 @@ raw.entries <- lapply(file.list, function(z)
 raw.elim <- lapply(file.list, function(z) 
   read.xls(z, sheet = 'Elimination Rounds', header = TRUE, stringsAsFactors = FALSE)[,1:9])
 raw.bonus <- lapply(file.list, function(z) 
-  read.xls(z, sheet = 'Goals Scored', header = TRUE, stringsAsFactors = FALSE))
-names(raw.entries) <- names(raw.elim) <- gsub(".xlsx", "", gsub("World Cup 2018-","",file.list))
+  read.xls(z, sheet = 'Golden BOOT', header = TRUE, stringsAsFactors = FALSE))
+names(raw.entries) <- names(raw.elim) <- gsub(".xlsx", "", gsub("world_cup_","",file.list))
 results <- read.csv('results.csv', stringsAsFactors = FALSE)
 results.elim <- read.csv('results_elim.csv', stringsAsFactors = FALSE)
 
@@ -139,8 +148,10 @@ total.total[,2:ncol(total.total)] <- t(apply(total.total[,2:ncol(total.total)], 
 total.total <- total.total[rev(order(total.total$Winner)),]
 total.total <- total.total[,c('Name','Start','Group.Points','Group.Finish','Round.of.16','Quarter.Finals','Semi.Finals','Final','Winner')]
 
-playoff.format <- read.csv('playoff_format.csv', stringsAsFactors = FALSE)
-raw.elim.ordered <- lapply(raw.elim, function(z) z[c(4,7,11,13,17,22,25,30,2,8,10,14,20,24,26,29),c(6:9)]) #see round_16_format.png. since the "bracket" for round of 16 is Uruguay v Portugal and France v Argentina... we select an ordered table of Uruguay, Portugal, France, Argentina, so the possibility for the SF is 1000, 0100, 0010, 0001 etc. 
+playoff.format <- read.csv('playoff_format.csv', stringsAsFactors = FALSE) #this isnt used in code, it's raw.elim.ordered
+# MAKE SURE YOU EDIT THIS NEXT LINE SUCH THAT IT IS IN THE ORDER OF A KNOCKOUT GRAPH
+# CHECK raw.elim[[1]][c(4,7,11,13,17,22,25,30,2,8,10,14,20,24,26,29),c(6:9)]
+raw.elim.ordered <- lapply(raw.elim, function(z) z[c(4,7,9,14,20,24,25,32,13,12,5,3,23,17,29,27),c(6:9)]) #see round_16_format.png. since the "bracket" for round of 16 is Uruguay v Portugal and France v Argentina... we select an ordered table of Uruguay, Portugal, France, Argentina, so the possibility for the SF is 1000, 0100, 0010, 0001 etc. 
 x.qf <- c('10', '01') # for every game, this is the combination of team 1 win vs team 2 win
 x.sf <- c('1000','0100','0010','0001') # only one of each 4 can make the sf
 x.gf <- sapply(0:7, function(z) paste(c(rep(0,z),1,rep(0,7-z)),collapse=''))
@@ -156,8 +167,9 @@ idx.good <- sapply(1:nrow(playoff.gf.and.win), function(z) CountStringDiff(playo
 playoff.gf.and.win.good <- playoff.gf.and.win[idx.good,]
 
 #Possible sf, gf, win combs.
-#idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,8) == "00100010" & substr(playoff.sf.outcomes,13,16) == "0010"
-idx.playoff.sf.outcomes.remaining <- rep(TRUE, 256)
+idx.playoff.sf.outcomes.remaining <- playoff.sf.outcomes == "0010010010001000"
+#idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,8) == "00100100"
+#idx.playoff.sf.outcomes.remaining <- rep(TRUE, 256)
 playoff.sf.gf.win <- data.frame(lapply(expand.grid(playoff.sf.outcomes[idx.playoff.sf.outcomes.remaining], apply(playoff.gf.and.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.sf.gf.win) <- c('Semi','Final')
 playoff.sf.gf.win$Winner <- sapply(playoff.sf.gf.win$Final, SecondString)
@@ -167,9 +179,9 @@ playoff.sf.gf.win.good <- playoff.sf.gf.win[idx.good,]
 
 #Possible qf, sf, gf, win combs.
 #Check the format of playoff.format to understand this. E.g. since we had France and Uruguay WIN it is 1010 etc.
-#idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "1010101010010110" when its over
-#idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,8) == "00100010" & substr(playoff.qf.outcomes,13,16) == "0010" when its partially over
-idx.playoff.qf.outcomes.remaining <- rep(TRUE, 256) #when nothing has been determined
+idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "1010011010101010" #when its over
+#idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,12) == "101001101010"  # when some outcomes are determined
+#idx.playoff.qf.outcomes.remaining <- rep(TRUE, 256) #when nothing has been determined
 playoff.qf.sf.gf.win <- data.frame(lapply(expand.grid(playoff.qf.outcomes[idx.playoff.qf.outcomes.remaining], apply(playoff.sf.gf.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.qf.sf.gf.win) <- c('Quarter','Semi')
 playoff.qf.sf.gf.win$Final <- sapply(playoff.qf.sf.gf.win$Semi, SecondString)
@@ -186,87 +198,158 @@ colnames(all.player.total.outcome.table) <- names.keep
 all.player.wins <- table(names.keep[apply(all.player.total.outcome.table, 1, which.max)])
 
 win.percs <- do.call(rbind, 
-                      lapply(1:8, function(z) 
-                      apply(all.player.total.outcome.table[,z] >= all.player.total.outcome.table, 2, sum)
+                      lapply(1:length(raw.entries), function(z) 
+                      apply(all.player.total.outcome.table[,z] > all.player.total.outcome.table, 2, sum)
                       )
                     )/nrow(playoff.sf.gf.win.good)
 rownames(win.percs) <- colnames(win.percs)
 diag(win.percs) <- NA
 ```
 
-# Paths to victory
+# Scoreboard
 
-<!-- # BONUSES (bet you forgot about those!) -->
+```{r running_total, include=TRUE, echo=FALSE, warning=FALSE}
+elim.stages[10,7] <- 15 #maria wins golden boot
+running.tally <- merge(running.total[,c(2,5)], elim.stages[,c(1,2,3,4,5,6,7)])
+names(running.tally) <- c('Name','Group Stage Games','Bracket Rankings','Final 16 Picks','Round of 16','Quarter Finals','Semi Finals','Final/Golden Boot')
+totals <- data.frame(Name = running.tally$Name, Total = apply(running.tally[,2:8], 1, sum))
+totals <- totals[order(totals$Total),]
 
-<!-- You did forget about bonuses.  -->
-
-<!-- Following the sad exit of the crowd favourite Neymar, it appears nobody picked the golden boot player, which looks almost certain to be Kane. Should have checked those group stages! -->
-
-<!-- Almost all players picked 6 goals for the golden boot, the current lead, though Andrew is looking for 7, which would put him into first place by 1 hearbreaking point (or LAST if not... I did not weight these bonuses appropriately...). Tiago was punch-drunk on Neymar glory, predicting 13 goals to the winner. Picking it correctly is worth +15 points. -->
-
-<!-- As such, the most pivotal remaining variable will likely be picking goals scored in the third place game, which is worth 10 points (I am willing to admit mistakes were made). Eric wins if the number is 6 (unless Kane gets exactly one more goal, then Andrew), Giselle wins if the number is 5, Taehoon wins if it is 4, and Karen wins if it is 3. For 2,1, or 0, Eric and Giselle tie for first place. -->
-
-<!-- ```{r bonus, echo=FALSE, results='asis'} -->
-
-<!-- barplot(do.call(c, lapply(raw.bonus, `[`, 2, 2,)), names.arg=names(points.by.player), las=2, main='Total goals scored in 3rd place game', col=c('gray20','gray20','gray40','gray80','gray60','gray80','gray60','gray80')) -->
-
-<!-- legend("topright", c('WC 1986','WC 2002 and 2010','WC 1994 and 2006','WC 1990, 1998 and 2014'), pch=15, col=c('gray20','gray40','gray60','gray80')) -->
-
-<!-- barplot(do.call(c, lapply(raw.bonus, `[`, 1, 2,)), names.arg=names(points.by.player), las=2, main='Number of goals scored by golden boot', col=c('gray80',rep('gray20',6),'red')) -->
-
-<!-- legend("topleft", c('Kane +1 or Lukaku +3','Current leader (Kane)','Bold!'), pch=15, col=c('gray80','gray20','red')) -->
-
-<!-- golden.boot.pick <- data.frame(names(points.by.player), do.call(c, lapply(lapply(raw.bonus, names), function (z) z[2]))) -->
-
-<!-- names(golden.boot.pick) <- c('Who','Boot pick') -->
-
-<!-- kable(golden.boot.pick, -->
-
-<!--       row.names = FALSE) %>% -->
-
-<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
-
-<!-- ``` -->
-
-## Everyone
-
-Percentage of cases where you beat (or draw with) each player from all possible game outcomes.
-
--   (NB: non-symmetries are where two players tie.)
-
-```{r corr, echo=FALSE, fig.align="center"}
-melted_cormat <- melt(win.percs, na.rm = TRUE)
-# Heatmap
-ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value*100))+
- geom_tile(color = "white")+
- scale_fill_gradient2(low = "red", high = "blue", mid = "gray75", 
-   midpoint = 50, limit = c(0,100), space = "Lab", 
-    name="Percentage\nof\npaths") +
-  theme_minimal()+ # minimal theme
- theme(axis.text.x = element_text(angle = 45, vjust = 1, 
-    size = 12, hjust = 1))+
- coord_fixed()
-
-ggheatmap + geom_text(aes(Var2, Var1, label = round(value*100,0)), color = "white", size = 4) +
-  xlab('Beats this player') +
-  ylab('Proportion of times this player') +
-theme(
-  panel.grid.major = element_blank(),
-  panel.border = element_blank(),
-  panel.background = element_blank(),
-  axis.ticks = element_blank())
+running.tally %>% 
+  tidyr::pivot_longer(-Name) %>%
+  mutate(name = factor(name, levels=rev(c('Group Stage Games','Bracket Rankings','Final 16 Picks','Round of 16','Quarter Finals','Semi Finals','Final/Golden Boot'))),
+         Name = factor(Name, levels=totals$Name)) %>%
+  ggplot(aes(x=Name, y=value, fill=name, label=value)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_y_continuous(sec.axis = dup_axis()) +
+  scale_fill_manual(values = rev(c('#1077C3','#49BCE3','#56042C','#FEC310','#10BC10','#BC10BC','#000000')), guide = guide_legend(reverse = TRUE, nrow=2, byrow=TRUE)) +
+  geom_text(size = 3, position = position_stack(vjust = 0.5), color='white', alpha=.7) +
+  geom_point(data=totals, aes(x=Name, y=Total, label=Total, fill=NULL), show.legend=FALSE) +
+  geom_text(data=totals, aes(x=Name, y=Total+3.5, label=Total, fill=NULL), size=3.5) +
+  coord_flip() +
+  labs(x='', y='', fill='') +
+  theme_minimal() +
+  theme(legend.position = "top", legend.box="vertical")
 ```
 
-## Grand winner
+## Scores By Stage
 
-Number of paths from which each player can win, without bonus points (golden boot etc.):
+```{r totaltable, echo=FALSE, results='asis'}
+overall.tally <- merge(running.total, elim.stages)[,c(1,5:11)]
+names(overall.tally)[2] <- 'Group.Stage'
+names(overall.tally)[4] <- 'Final.16.Picks'
+names(overall.tally)[5] <- 'Round.of.16'  #if you want the title to mean "qualified for" don't rename, otherwise if you want it to mean "ypou picked this team to win the... then rename
+names(overall.tally)[6] <- 'Quarter Finals' 
+names(overall.tally)[7] <- 'Semi Finals' 
+names(overall.tally)[8] <- 'Final' 
 
-```{r num of paths, echo=FALSE, results='asis'}
-all.player.perc <- all.player.wins/sum(all.player.wins)
-all.player.wins <- all.player.wins[rev(order(all.player.wins))]
-kable(all.player.wins, col.names = c('Player','Number of paths to glory')) %>%
+overall.tally$Total <- apply(overall.tally[,2:ncol(overall.tally)], 1, sum)
+kable(overall.tally[rev(order(overall.tally$Total)),],
+      row.names = FALSE,
+      col.names = gsub("\\."," ",names(overall.tally))) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+<!-- ```{r total.tally, echo=FALSE, fig.align="center"} -->
+<!-- total.tally.graphdata <- melt(total.total, id.vars = 'Name') -->
+<!-- total.tally.graphdata$variable <- as.numeric(total.tally.graphdata$variable) -->
+<!-- total.tally.graphdata$Name <- factor(total.tally.graphdata$Name, levels=total.total$Name) -->
+<!-- total.tally.graphdata <- total.tally.graphdata[order(total.tally.graphdata$Name),] -->
+<!-- #total.tally.graphdata$variable <- total.tally.graphdata$variable - -->
+<!-- #  (mean(as.numeric(total.tally.graphdata$Name)) - as.numeric(total.tally.graphdata$Name))/50 -->
+<!-- ggplot(data=total.tally.graphdata, -->
+<!--       aes(x=variable, color=Name, y=value)) + -->
+<!--   geom_line(alpha=.9, lwd=1.1) + -->
+<!--   geom_point(alpha=.9) + -->
+<!--   scale_y_continuous(breaks = seq(from=0,to=max(total.tally.graphdata[,3]), by=5), -->
+<!--                      limits=c(0,max(total.tally.graphdata[,3]))) + -->
+<!--   scale_x_continuous(breaks=seq(ncol(total.total)-1), labels=gsub("\\.", " ", colnames(total.total[,2:ncol(total.total)]))) + -->
+<!--   theme(axis.text.x=element_text(angle = 0, vjust=.5, size=10)) -->
+<!-- ``` -->
+
+
+# Golden Boot
+
+Congrats to Maria/Mbappe!
+
+```{r bonus, echo=FALSE, results='asis'}
+
+golden.boot.pick <- data.frame(names(points.by.player), do.call(c, lapply(lapply(raw.bonus, names), function (z) z[2])))
+
+names(golden.boot.pick) <- c('Who','Boot pick')
+
+kable(golden.boot.pick[order(golden.boot.pick[,2]),],
+
+      row.names = FALSE) %>%
+
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+
+
+<!-- # Future Paths To Victory -->
+
+<!-- ## Grand winner -->
+
+<!-- Below shows the number of those paths from which each player can win, (assuming nobody gets the bonus of the golden boot). -->
+
+
+<!-- ```{r num of paths, echo=FALSE, results='asis'} -->
+<!-- all.player.perc <- all.player.wins/sum(all.player.wins) -->
+<!-- all.player.wins <- all.player.wins[rev(order(all.player.wins))] -->
+<!-- kable(all.player.wins, col.names = c('Player','Number of paths to victory')) %>% -->
+<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
+<!-- ``` -->
+
+<!-- ## Must wins -->
+
+<!-- The below table shows which teams must win their next game for you to stay in the comp (again, assumes you don't get the golden boot). -->
+
+<!-- ```{r stay_alive, include=TRUE, echo=FALSE} -->
+<!-- do_or_die <- lapply(1:length(raw.elim), function(y) apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==y,3],""))), 2, function(z) all(unique(z)=="1"))) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to QF for you to stay in -->
+<!-- names(do_or_die) <- names(raw.elim) -->
+<!-- clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][z], collapse = " & ")))) -->
+<!-- clean_do_or_die[,1] <- gsub("Argentina & Croatia", "Any", gsub("Argentina & Croatia &", "", clean_do_or_die[,1]))  -->
+<!-- clean_do_or_die[clean_do_or_die[,1]!="",] %>% -->
+<!--   kable(col.names = 'Must win to stay alive') %>% -->
+<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
+<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,2],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to SF for you to stay in -->
+<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,3],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to FINAL for you to stay in -->
+<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,4],""))), 2, function(z) all(unique(z)=="0")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="0") means they are a must NOT WIN for you to be able to have a path to victory. -->
+<!-- ``` -->
+
+
+<!-- ## Who can you still beat? -->
+
+<!-- Percentage of cases where you beat (or draw with) each player from all possible game outcomes. -->
+
+<!-- -   Once there is a row where a player hits 100 on every square, they have won. -->
+<!-- -   If there's a non-symmetry between the x and the y axis, those are ties (e.g. if the table indicates Peter beats John 40% of the time, but John beats Peter 30% of the time, that means they must tie 30% of the time.) -->
+
+<!-- ```{r corr, echo=FALSE, fig.align="center", out.width="90%"} -->
+<!-- melted_cormat <- melt(win.percs, na.rm = TRUE) -->
+<!-- # Heatmap -->
+<!-- ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value*100))+ -->
+<!--  geom_tile(color = "white")+ -->
+<!--  scale_fill_gradient2(low = "red", high = "blue", mid = "gray75", -->
+<!--    midpoint = 50, limit = c(0,100), space = "Lab", -->
+<!--     name="Percentage\nof\npaths") + -->
+<!--   theme_minimal()+ # minimal theme -->
+<!--  theme(axis.text.x = element_text(angle = 45, vjust = 1, -->
+<!--     size = 12, hjust = 1))+ -->
+<!--  coord_fixed() -->
+
+<!-- ggheatmap + geom_text(aes(Var2, Var1, label = round(value*100,0)), color = "white", size = 3) + -->
+<!--   xlab('Beats this player') + -->
+<!--   ylab('Proportion of times this player') + -->
+<!-- theme( -->
+<!--   panel.grid.major = element_blank(), -->
+<!--   panel.border = element_blank(), -->
+<!--   panel.background = element_blank(), -->
+<!--   axis.ticks = element_blank()) -->
+<!-- ``` -->
+
 
 <!-- * Eric needs France to make the final, and he will be drawn with Giselle for first. (Necessitates that Karen and Tiago lose). -->
 
@@ -276,38 +359,9 @@ kable(all.player.wins, col.names = c('Player','Number of paths to glory')) %>%
 
 <!-- HOLD IT: Just realized I had assigned +15 to picking golden boot and +15 to picking goals scored by whoever wins golden boot. Currently that is 6 but if Kane scores one more there will be a new record of 7, and Andrew +15 will put andrew exactly 1 point ahead of Giselle to be in first. -->
 
-# Overall Score
+# Future Picks
 
-```{r totaltable, echo=FALSE, results='asis'}
-overall.tally <- merge(running.total, elim.stages)[,c(1,5:10)]
-names(overall.tally)[2] <- 'Group.Stage'
-overall.tally$Total <- apply(overall.tally[,2:ncol(overall.tally)], 1, sum)
-kable(overall.tally[rev(order(overall.tally$Total)),], 
-      row.names = FALSE,
-      col.names = gsub("\\."," ",names(overall.tally))) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-```
-
-```{r total.tally, echo=FALSE, fig.align="center"}
-total.tally.graphdata <- melt(total.total, id.vars = 'Name')
-total.tally.graphdata$variable <- as.numeric(total.tally.graphdata$variable)
-total.tally.graphdata$Name <- factor(total.tally.graphdata$Name, levels=total.total$Name)
-total.tally.graphdata <- total.tally.graphdata[order(total.tally.graphdata$Name),]
-#total.tally.graphdata$variable <- total.tally.graphdata$variable - 
-#  (mean(as.numeric(total.tally.graphdata$Name)) - as.numeric(total.tally.graphdata$Name))/50
-ggplot(data=total.tally.graphdata,
-      aes(x=variable, color=Name, y=value)) +
-  geom_line(alpha=.9, lwd=1.1) +
-  geom_point(alpha=.9) +
-  scale_y_continuous(breaks = seq(from=0,to=max(total.tally.graphdata[,3]), by=5),
-                     limits=c(0,max(total.tally.graphdata[,3]))) +
-  scale_x_continuous(breaks=seq(ncol(total.total)-1), labels=gsub("\\.", " ", colnames(total.total[,2:ncol(total.total)]))) +
-  theme(axis.text.x=element_text(angle = 0, vjust=.5, size=10))
-```
-
-# Crowd favourites
-
-## Overall
+## Crowd favourites
 
 ```{r crowdsource.finals, echo=FALSE}
 all.elim <- do.call(rbind, raw.elim)
@@ -341,40 +395,53 @@ winner <- do.call(rbind,
                       )
                     )
 finals.and.winner <- data.frame(finals, winner, stringsAsFactors=FALSE)
-kable(finals.and.winner[c(6,1,2,7,3,5,8,4),], 
+kable(finals.and.winner[order(finals.and.winner$winner),], 
       col.names = c("Grand Final Pick","Cup Pick")) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 # Group stage
 
-## Points Tally
+```{r tally.graph, echo=FALSE, fig.align="center", out.width="100%"}
+tally.graph.data <- do.call(rbind, group.stage.totals)[,c(1,7,11)]
+tally.graph.data$Name <- factor(tally.graph.data$Name, levels=running.total$Name)
+tally.graph.data$Match <- tally.graph.data$Match - 
+  (mean(as.numeric(tally.graph.data$Name)) - as.numeric(tally.graph.data$Name))/65
+tally.graph.data$Total <- tally.graph.data$Total + 
+  (mean(as.numeric(tally.graph.data$Name)) - as.numeric(tally.graph.data$Name))/15
+ggplot(data=tally.graph.data, aes(x=Match, color=Name, y=Total)) + 
+  geom_step(alpha=.8, linewidth=.35) +
+  scale_y_continuous(breaks = seq(from=0,to=max(tally.graph.data[,3]), by=2),
+                     limits=c(0,max(tally.graph.data[,3])),
+                     name = '') +
+  scale_x_continuous(breaks=seq(num.games.played), labels=game.names[1:num.games.played],
+                     name = '') +
+  labs(color='') +
+  theme_minimal() +
+  theme(axis.text.x=element_text(angle = 90, vjust=.5, size=7),
+        legend.text=element_text(size=7),
+        legend.spacing.x = unit(.1, 'cm'),
+        legend.spacing.y = unit(.1, 'cm'),
+        legend.key.size = unit(0.5, "cm"),
+        legend.position = 'right')
+```
+
 
 ```{r tally, echo=FALSE}
 kable(running.total[,c(1,3:5)], col.names = c("Matches Played","Outcomes","Scores","Points")) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-```{r tally.graph, echo=FALSE, fig.align="center", out.width="100%"}
-tally.graph.data <- do.call(rbind, group.stage.totals)[,c(1,7,11)]
-tally.graph.data$Name <- factor(tally.graph.data$Name, levels=running.total$Name)
-tally.graph.data$Match <- tally.graph.data$Match - 
-  (mean(as.numeric(tally.graph.data$Name)) - as.numeric(tally.graph.data$Name))/20
-ggplot(data=tally.graph.data, aes(x=Match, color=Name, y=Total)) + 
-  geom_step(alpha=.9) +
-  scale_y_continuous(breaks = seq(from=0,to=max(tally.graph.data[,3]), by=3),
-                     limits=c(0,max(do.call(rbind, group.stage.totals)[,11]))) +
-  scale_x_continuous(breaks=seq(num.games.played), labels=game.names[1:num.games.played]) +
-  theme(axis.text.x=element_text(angle = 90, vjust=.5, size=7))
-```
 
-## Upcoming games
+<!-- ## Upcoming picks -->
 
-```{r tomorrow, echo=FALSE, results='asis'}
-num.games.played <- 4 #hack for now
-tomorrow <- lapply(raw.entries, "[", (num.games.played + 1):(num.games.played + 4), )
-lapply(tomorrow, function(x) kable(x[,c(2,4,3,5)], 
-                                   col.names = c('Home','','Away','')) %>%
-                              kable_styling(bootstrap_options = c("striped"),
-                                            full_width = F))
-```
+<!-- ```{r tomorrow, echo=FALSE, results='asis'} -->
+<!-- #num.games.played <- 4 #hack for now -->
+<!-- tomorrow <- lapply(raw.entries, "[", (num.games.played + 1):(num.games.played + 4), ) -->
+<!-- lapply(tomorrow, function(x) kable(x[,c(2,4,3,5)],  -->
+<!--                                    col.names = c('Home','','Away',''), -->
+<!--                                    row.names = FALSE) %>% -->
+<!--                               kable_styling(bootstrap_options = c("striped"), -->
+<!--                                             full_width = F)) -->
+<!-- ``` -->
+
