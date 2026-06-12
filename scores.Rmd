@@ -1,5 +1,5 @@
 ---
-title: "World Cup 2026"
+title: "Bstar FI: World Cup 2026"
 author: ""
 date: "Updated on `r format(Sys.time(), '%d %b %H:%M')`"
 output:
@@ -246,7 +246,7 @@ diag(win.percs) <- NA
 ```
 
 
-# Group stage
+# TLDR Version
 
 ```{r tally.graph, echo=FALSE, fig.align="center", out.width="100%"}
 tally.graph.data <- do.call(rbind, group.stage.totals)[,c(1,8,12)] %>% group_by(Name)
@@ -399,7 +399,9 @@ for (i in seq_along(tomorrow)){
 <!--   axis.ticks = element_blank()) -->
 <!-- ``` -->
 
-# Finals Picks
+# The Detail
+
+### Finals Picks
 
 ## Crowd favourites
 
