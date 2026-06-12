@@ -36,6 +36,7 @@ jobs:
             any::gtools
             any::dplyr
             any::tidyr
+            any::ggrepel
             any::jsonlite
 
       - name: Poll feed and update results_2026.csv
