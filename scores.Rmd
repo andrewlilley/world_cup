@@ -401,9 +401,9 @@ for (i in seq_along(tomorrow)){
 
 # The Detail
 
-### Finals Picks
+## Finals Picks
 
-## Crowd favourites
+### Crowd favourites
 
 ```{r crowdsource.finals, echo=FALSE}
 all.elim <- do.call(rbind, raw.elim)
@@ -417,7 +417,7 @@ kable(StrikethroughTable(elim.count[elim.count$Quarter.Finals > 0,], eliminated.
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-<!-- ## Final Picks -->
+<!-- ### Grand Final Tips -->
 
 <!-- ```{r final.picks, echo=FALSE} -->
 <!-- finals <- do.call(rbind, -->
