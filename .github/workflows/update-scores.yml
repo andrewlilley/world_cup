@@ -43,6 +43,8 @@ jobs:
         run: Rscript update_results_2026.R
 
       - name: Knit scores.Rmd
+        env:
+          TZ: Australia/Sydney
         run: Rscript -e 'rmarkdown::render("scores.Rmd")'
 
       - name: Commit and push changes
