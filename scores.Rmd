@@ -251,10 +251,10 @@ diag(win.percs) <- NA
 ```{r tally.graph, echo=FALSE, fig.align="center", out.width="100%"}
 tally.graph.data <- do.call(rbind, group.stage.totals)[,c(1,8,12)] %>% group_by(Name)
 tally.graph.data$Name <- factor(tally.graph.data$Name, levels=running.total$Name)
-tally.graph.data$Match <- tally.graph.data$Match -
-  (mean(as.numeric(tally.graph.data$Name)) - as.numeric(tally.graph.data$Name))/135
-tally.graph.data$Total <- tally.graph.data$Total +
-  (mean(as.numeric(tally.graph.data$Name)) - as.numeric(tally.graph.data$Name))/15
+tally.graph.data <- tally.graph.data %>% 
+  group_by(Match, Total) %>% 
+  mutate(Total = Total + (row_number() - n()/2+0.5)/20,
+         Match = Match + (row_number() - n()/2+0.5)/140)
 ggplot(data=tally.graph.data, aes(x=Match, color=Name, y=Total, label=Name)) +
   geom_step(alpha=.8, linewidth=.65) +
   scale_y_continuous(breaks = seq(from=0,to=max(tally.graph.data[,3]), by=2),
