@@ -257,7 +257,7 @@ tally.graph.data <- tally.graph.data %>%
          Match = Match + (row_number() - (n()/2+0.5))/30) %>% 
   group_by(Name)
 ggplot(data=tally.graph.data, aes(x=Match, color=Name, y=Total, label=Name)) +
-  geom_step(alpha=.8, linewidth=.65) +
+  geom_step(alpha=.8, linewidth=.85) +
   scale_y_continuous(breaks = seq(from=0,to=max(tally.graph.data[,3]), by=2),
                      limits=c(min(0, min(tally.graph.data[,3])),max(tally.graph.data[,3])+.02),
                      name = '') +
