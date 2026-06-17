@@ -253,8 +253,8 @@ tally.graph.data <- do.call(rbind, group.stage.totals)[,c(1,8,12)] %>% group_by(
 tally.graph.data$Name <- factor(tally.graph.data$Name, levels=running.total$Name)
 tally.graph.data <- tally.graph.data %>% 
   group_by(Match, Total) %>% 
-  mutate(Total = Total + (row_number() - (n()/2+0.5))/8,
-         Match = Match + (row_number() - (n()/2+0.5))/30) %>% 
+  mutate(Total = Total + (row_number() - (n()/2+0.5))/5,
+         Match = Match + (row_number() - (n()/2+0.5))/10) %>% 
   group_by(Name)
 ggplot(data=tally.graph.data, aes(x=Match, color=Name, y=Total, label=Name)) +
   geom_step(alpha=.8, linewidth=.85) +
