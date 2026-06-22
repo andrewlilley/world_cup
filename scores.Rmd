@@ -284,32 +284,28 @@ kable(running.total[,c(1,3:5)], col.names = c("Matches Played","Outcomes","Score
 upcoming.matches <- head(results$Match[is.na(results$Result)], 4)
 tomorrow <- lapply(raw.entries, function(z) z[match(upcoming.matches, z$Match),])
 
-# Combine all players' picks into one data frame
 tomorrow.all <- do.call(rbind, lapply(names(tomorrow), function(nm) {
   df <- tomorrow[[nm]]
   df$Player <- nm
   df
 }))
 
-# For each upcoming match, group players by their pick
 for (m in upcoming.matches) {
   match.picks <- tomorrow.all[tomorrow.all$Match == m, ]
   home <- match.picks$Home[1]
   away <- match.picks$Away[1]
   
-  cat('\n**', home, 'v', away, '**\n\n', sep=' ')
+  cat('\n\n###', home, 'v', away, '\n\n')
   
-  # Create a pick label and group players
-  match.picks$PickLabel <- paste0(home, ' ', match.picks$Home.Goals, '-', away, ' ', match.picks$Away.Goals)
+  match.picks$PickLabel <- paste0(home, ' ', match.picks$Home.Goals, ' - ', away, ' ', match.picks$Away.Goals)
   grouped <- aggregate(Player ~ PickLabel, data=match.picks, FUN=function(x) paste(x, collapse=', '))
   grouped <- grouped[order(grouped$PickLabel), ]
   
   for (i in seq_len(nrow(grouped))) {
-    cat('*', grouped$PickLabel[i], ':*', grouped$Player[i], '\n\n')
+    cat(grouped$PickLabel[i], ':', grouped$Player[i], '\n\n')
   }
 }
 ```
-
 
 # Scoreboard
 
