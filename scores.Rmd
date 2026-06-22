@@ -295,49 +295,48 @@ for (i in seq_along(tomorrow)){
 ```
 
 
-<!-- # Scoreboard -->
+# Scoreboard
 
-<!-- ```{r running_total, include=TRUE, echo=FALSE, warning=FALSE} -->
-<!-- running.tally <- merge(running.total[,c(2,5)], elim.stages[,c(1,2,3,4,5,6,7)]) -->
-<!-- names(running.tally) <- c('Name','Group Stage Games','Bracket Rankings','Final 16 Picks','Round of 16','Quarter Finals','Semi Finals','Final') -->
-<!-- totals <- data.frame(Name = running.tally$Name, Total = apply(running.tally[,2:8], 1, sum)) -->
-<!-- totals <- totals[order(totals$Total),] -->
+```{r running_total, include=TRUE, echo=FALSE, warning=FALSE}
+running.tally <- merge(running.total[,c(2,5)], elim.stages[,c(1,2,3,4,5,6,7)])
+names(running.tally) <- c('Name','Group Stage Games','Bracket Rankings','Final 16 Picks','Round of 16','Quarter Finals','Semi Finals','Final')
+totals <- data.frame(Name = running.tally$Name, Total = apply(running.tally[,2:8], 1, sum))
+totals <- totals[order(totals$Total),]
 
-<!-- running.tally %>% -->
-<!--   tidyr::pivot_longer(-Name) %>% -->
-<!--   mutate(name = factor(name, levels=rev(c('Group Stage Games','Bracket Rankings','Final 16 Picks','Round of 16','Quarter Finals','Semi Finals','Final'))), -->
-<!--          Name = factor(Name, levels=totals$Name)) %>% -->
-<!--   ggplot(aes(x=Name, y=value, fill=name, label=value)) + -->
-<!--   geom_bar(position="stack", stat="identity") + -->
-<!--   scale_y_continuous(sec.axis = dup_axis()) + -->
-<!--   scale_fill_manual(values = rev(c('#1077C3','#49BCE3','#56042C','#FEC310','#10BC10','#BC10BC','#000000')), guide = guide_legend(reverse = TRUE, nrow=2, byrow=TRUE)) + -->
-<!--   geom_text(size = 3, position = position_stack(vjust = 0.5), color='white', alpha=.7) + -->
-<!--   geom_point(data=totals, aes(x=Name, y=Total, label=Total, fill=NULL), show.legend=FALSE) + -->
-<!--   geom_text(data=totals, aes(x=Name, y=Total+3.5, label=Total, fill=NULL), size=3.5) + -->
-<!--   coord_flip() + -->
-<!--   labs(x='', y='', fill='') + -->
-<!--   theme_minimal() + -->
-<!--   theme(legend.position = "top", legend.box="vertical") -->
-<!-- ``` -->
+running.tally %>%
+  tidyr::pivot_longer(-Name) %>%
+  mutate(name = factor(name, levels=rev(c('Group Stage Games','Bracket Rankings','Final 16 Picks','Round of 16','Quarter Finals','Semi Finals','Final'))),
+         Name = factor(Name, levels=totals$Name)) %>%
+  ggplot(aes(x=Name, y=value, fill=name, label=value)) +
+  geom_bar(position="stack", stat="identity") +
+  scale_y_continuous(sec.axis = dup_axis()) +
+  scale_fill_manual(values = rev(c('#1077C3','#49BCE3','#56042C','#FEC310','#10BC10','#BC10BC','#000000')), guide = guide_legend(reverse = TRUE, nrow=2, byrow=TRUE)) +
+  geom_text(size = 3, position = position_stack(vjust = 0.5), color='white', alpha=.7) +
+  geom_point(data=totals, aes(x=Name, y=Total, label=Total, fill=NULL), show.legend=FALSE) +
+  geom_text(data=totals, aes(x=Name, y=Total+3.5, label=Total, fill=NULL), size=3.5) +
+  coord_flip() +
+  labs(x='', y='', fill='') +
+  theme_minimal() +
+  theme(legend.position = "top", legend.box="vertical")
+```
 
-<!-- ## Scores By Stage -->
+## Scores By Stage
 
-<!-- ```{r totaltable, echo=FALSE, results='asis'} -->
-<!-- overall.tally <- merge(running.total, elim.stages)[,c(1,5:11)] -->
-<!-- names(overall.tally)[2] <- 'Group.Stage' -->
-<!-- names(overall.tally)[4] <- 'Final.16.Picks' -->
-<!-- names(overall.tally)[5] <- 'Round.of.16'  #if you want the title to mean "qualified for" don't rename, otherwise if you want it to mean "ypou picked this team to win the... then rename -->
-<!-- names(overall.tally)[6] <- 'Quarter Finals' -->
-<!-- names(overall.tally)[7] <- 'Semi Finals' -->
-<!-- names(overall.tally)[8] <- 'Final' -->
+```{r totaltable, echo=FALSE, results='asis'}
+overall.tally <- merge(running.total, elim.stages)[,c(1,5:11)]
+names(overall.tally)[2] <- 'Group.Stage'
+names(overall.tally)[4] <- 'Final.16.Picks'
+names(overall.tally)[5] <- 'Round.of.16'  #if you want the title to mean "qualified for" don't rename, otherwise if you want it to mean "ypou picked this team to win the... then rename
+names(overall.tally)[6] <- 'Quarter Finals'
+names(overall.tally)[7] <- 'Semi Finals'
+names(overall.tally)[8] <- 'Final'
 
-<!-- overall.tally$Total <- apply(overall.tally[,2:ncol(overall.tally)], 1, sum) -->
-<!-- kable(overall.tally[rev(order(overall.tally$Total)),], -->
-<!--       row.names = FALSE, -->
-<!--       col.names = gsub("\\."," ",names(overall.tally))) %>% -->
-<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
-<!-- ``` -->
-
+overall.tally$Total <- apply(overall.tally[,2:ncol(overall.tally)], 1, sum)
+kable(overall.tally[rev(order(overall.tally$Total)),],
+      row.names = FALSE,
+      col.names = gsub("\\."," ",names(overall.tally))) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
 
 <!-- # Future Paths To Victory -->
 
