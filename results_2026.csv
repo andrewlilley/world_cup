@@ -63,8 +63,8 @@
 52,"I","Senegal","Iraq",5,0,"Senegal"
 43,"H","Spain","Uruguay",1,0,"Spain"
 44,"H","Saudi Arabia","Cape Verde",0,0,"Draw"
-41,"G","Belgium","New Zealand",,,
-42,"G","Iran","Egypt",,,
+41,"G","Belgium","New Zealand",5,1,"Belgium"
+42,"G","Iran","Egypt",1,1,"Draw"
 69,"L","England","Panama",,,
 70,"L","Croatia","Ghana",,,
 61,"K","Portugal","Colombia",,,
