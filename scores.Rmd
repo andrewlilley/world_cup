@@ -389,32 +389,6 @@ kable(running.total[,c(1,3:5)], col.names = c("Matches Played","Outcomes","Score
 
 ## Upcoming picks
 
-```{r tomorrow, echo=FALSE, results='asis'}
-upcoming.matches <- head(results$Match[is.na(results$Result)], 4)
-tomorrow <- lapply(raw.entries, function(z) z[match(upcoming.matches, z$Match),])
-
-tomorrow.all <- do.call(rbind, lapply(names(tomorrow), function(nm) {
-  df <- tomorrow[[nm]]
-  df$Player <- nm
-  df
-}))
-
-for (m in upcoming.matches) {
-  match.picks <- tomorrow.all[tomorrow.all$Match == m, ]
-  home <- match.picks$Home[1]
-  away <- match.picks$Away[1]
-  
-  cat('\n\n###', home, 'v', away, '\n\n')
-  
-  match.picks$PickLabel <- paste0(home, ' ', match.picks$Home.Goals, ' - ', away, ' ', match.picks$Away.Goals)
-  grouped <- aggregate(Player ~ PickLabel, data=match.picks, FUN=function(x) paste(x, collapse=', '))
-  grouped <- grouped[order(grouped$PickLabel), ]
-  
-  for (i in seq_len(nrow(grouped))) {
-    cat(grouped$PickLabel[i], ':', grouped$Player[i], '\n\n')
-  }
-}
-```
 
 
 ## Finals Picks
