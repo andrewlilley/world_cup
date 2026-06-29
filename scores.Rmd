@@ -25,6 +25,8 @@ require(dplyr)
 require(tidyr)
 if (dir.exists('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/')) setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/') #no-op on the github actions runner
 
+eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan')
+
 AddPoints <- function(group.stage.entry, group.stage.truth){
   # 2026: the entry sheets are ordered by group, but results_2026.csv rows are kept
   # in calendar order, so align picks to results by Match number and score the
@@ -94,7 +96,6 @@ ReorderCorMat <- function(cormat){
   cormat <-cormat[hc$order, hc$order]
 }
 
-eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye')
 ```
 
 ```{r analysis, include=FALSE, cache=TRUE, cache.extra=list(tools::md5sum(c('results_2026.csv','results_elim_2026.csv')), tools::md5sum(list.files(pattern = "World_Cup_2026_.*xlsx", ignore.case = TRUE)))}
