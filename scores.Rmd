@@ -25,7 +25,11 @@ require(dplyr)
 require(tidyr)
 if (dir.exists('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/')) setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/') #no-op on the github actions runner
 
+<<<<<<< HEAD
 eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Germany','Japan')
+=======
+eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany')
+>>>>>>> 4e132f8c3ae083954c223747f3c4df8c49cff050
 
 AddPoints <- function(group.stage.entry, group.stage.truth){
   # 2026: the entry sheets are ordered by group, but results_2026.csv rows are kept
@@ -95,6 +99,10 @@ ReorderCorMat <- function(cormat){
   hc <- hclust(dd)
   cormat <-cormat[hc$order, hc$order]
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4e132f8c3ae083954c223747f3c4df8c49cff050
 ```
 
 ```{r analysis, include=FALSE, cache=TRUE, cache.extra=list(tools::md5sum(c('results_2026.csv','results_elim_2026.csv')), tools::md5sum(list.files(pattern = "World_Cup_2026_.*xlsx", ignore.case = TRUE)))}
