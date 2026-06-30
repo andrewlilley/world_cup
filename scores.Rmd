@@ -25,7 +25,7 @@ require(dplyr)
 require(tidyr)
 if (dir.exists('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/')) setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/') #no-op on the github actions runner
 
-eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany')
+eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany','Netherlands')
 
 AddPoints <- function(group.stage.entry, group.stage.truth){
   # 2026: the entry sheets are ordered by group, but results_2026.csv rows are kept
@@ -164,23 +164,20 @@ total.total[,2:ncol(total.total)] <- t(apply(total.total[,2:ncol(total.total)], 
 total.total <- total.total[rev(order(total.total$Winner)),]
 total.total <- total.total[,c('Name','Start','Group.Points','Group.Finish','Round.of.16','Quarter.Finals','Semi.Finals','Final','Winner')]
 
-knockout.bracket.known <- FALSE # set TRUE once the Round of 32 bracket is set (groups complete) and fill in r32.bracket.order below
+knockout.bracket.known <- TRUE # set TRUE once the Round of 32 bracket is set (groups complete) and fill in r32.bracket.order below
 if (knockout.bracket.known) {
-#playoff.format <- read.csv('playoff_format_2026.csv', stringsAsFactors = FALSE) #this isnt used in code, it's raw.elim.ordered. create this file (32 bracket-ordered teams) when the bracket is known
+  playoff.format <- read.csv('playoff_format.csv')
+  playoff.format$Team <- raw.elim[[1]][c(5,10,14,33,25,13,29,41,9,35,18,45,6,42,15,37),c(1)]
 # MAKE SURE YOU EDIT THIS NEXT LINE SUCH THAT IT IS IN THE ORDER OF A KNOCKOUT GRAPH
-# r32.bracket.order: the 32 row indices of raw.elim (teams in the R32), in bracket order, so if the
-# first R32 game is e.g. Mexico v Ghana, the first two indices are the rows of Mexico and Ghana, etc.
-r32.bracket.order <- c() # FILL IN: 32 row indices once the bracket is known
-raw.elim.ordered <- lapply(raw.elim, function(z) z[r32.bracket.order,c(5:9)]) #picks for R16, QF, SF, Final, Winner of the 32 bracket-ordered teams
-x.r16 <- c('10', '01') # for every R32 game, this is the combination of team 1 win vs team 2 win
-x.qf <- sapply(0:3, function(z) paste(c(rep(0,z),1,rep(0,3-z)),collapse='')) # only one of each 4 can make the qf
-x.sf <- sapply(0:7, function(z) paste(c(rep(0,z),1,rep(0,7-z)),collapse='')) # only one of each 8 can make the sf
-x.gf <- sapply(0:15, function(z) paste(c(rep(0,z),1,rep(0,15-z)),collapse=''))
-x.win <- sapply(0:31, function(z) paste(c(rep(0,z),1,rep(0,31-z)),collapse=''))
-playoff.r16.outcomes <- apply(permutations(n=2,r=16,v=x.r16,repeats.allowed=T), 1, function(x) paste(x, collapse=''))
-playoff.qf.outcomes <- apply(permutations(n=4,r=8,v=x.qf,repeats.allowed=T), 1, function(x) paste(x, collapse=''))
-playoff.sf.outcomes <- apply(permutations(n=8,r=4,v=x.sf,repeats.allowed=T), 1, function(x) paste(x, collapse=''))
-playoff.gf.outcomes <- apply(permutations(n=16,r=2,v=x.gf,repeats.allowed=T), 1, function(x) paste(x, collapse=''))
+# CHECK raw.elim[[1]][c(5,21,14,33,25,13,29,41,9,35,18,45,6,42,15,37),c(1)]
+raw.elim.ordered <- lapply(raw.elim, function(z) z[c(5,10,14,33,25,13,29,41,9,35,18,45,6,42,15,37),c(6:9)]) #see round_16_format.png. since the "bracket" for round of 16 is Uruguay v Portugal and France v Argentina... we select an ordered table of Uruguay, Portugal, France, Argentina, so the possibility for the SF is 1000, 0100, 0010, 0001 etc. 
+x.qf <- c('10', '01') # for every game, this is the combination of team 1 win vs team 2 win
+x.sf <- c('1000','0100','0010','0001') # only one of each 4 can make the sf
+x.gf <- sapply(0:7, function(z) paste(c(rep(0,z),1,rep(0,7-z)),collapse=''))
+x.win <- sapply(0:15, function(z) paste(c(rep(0,z),1,rep(0,15-z)),collapse=''))
+playoff.qf.outcomes <- apply(permutations(n=2,r=8,v=x.qf,repeats.allowed=T), 1, function(x) paste(x, collapse=''))
+playoff.sf.outcomes <- apply(permutations(n=4,r=4,v=x.sf,repeats.allowed=T), 1, function(x) paste(x, collapse=''))
+playoff.gf.outcomes <- apply(permutations(n=8,r=2,v=x.gf,repeats.allowed=T), 1, function(x) paste(x, collapse=''))
 playoff.win.outcomes <- x.win
 
 #Possible gf, win combs
@@ -210,28 +207,12 @@ playoff.qf.sf.gf.win$Final <- sapply(playoff.qf.sf.gf.win$Semi, SecondString)
 playoff.qf.sf.gf.win$Winner <- sapply(playoff.qf.sf.gf.win$Semi, ThirdString)
 playoff.qf.sf.gf.win$Semi <- sapply(playoff.qf.sf.gf.win$Semi, FirstString)
 idx.good <- sapply(1:nrow(playoff.qf.sf.gf.win), function(z) CountStringDiff(playoff.qf.sf.gf.win[z,1], playoff.qf.sf.gf.win[z,2]))==4
-playoff.qf.sf.gf.win.good <- playoff.qf.sf.gf.win[idx.good,]
-
-#Possible r16, qf, sf, gf, win combs.
-# NOTE: enumerating all 2^16 R32 outcomes against everything downstream is infeasible;
-# pin idx.playoff.r16.outcomes.remaining to the known prefix as R32 results come in (it is
-# manageable once most R32 games are decided, and fully so from the R16 onwards).
-idx.playoff.r16.outcomes.remaining <- rep(TRUE, length(playoff.r16.outcomes)) #when nothing has been determined
-#idx.playoff.r16.outcomes.remaining <- substr(playoff.r16.outcomes,1,16) == "..."  # when some outcomes are determined
-#idx.playoff.r16.outcomes.remaining <- playoff.r16.outcomes == "..." #when its over
-playoff.r16.qf.sf.gf.win <- data.frame(lapply(expand.grid(playoff.r16.outcomes[idx.playoff.r16.outcomes.remaining], apply(playoff.qf.sf.gf.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
-names(playoff.r16.qf.sf.gf.win) <- c('Sixteen','Quarter')
-playoff.r16.qf.sf.gf.win$Semi <- sapply(playoff.r16.qf.sf.gf.win$Quarter, SecondString)
-playoff.r16.qf.sf.gf.win$Final <- sapply(playoff.r16.qf.sf.gf.win$Quarter, ThirdString)
-playoff.r16.qf.sf.gf.win$Winner <- sapply(playoff.r16.qf.sf.gf.win$Quarter, FourthString)
-playoff.r16.qf.sf.gf.win$Quarter <- sapply(playoff.r16.qf.sf.gf.win$Quarter, FirstString)
-idx.good <- sapply(1:nrow(playoff.r16.qf.sf.gf.win), function(z) CountStringDiff(playoff.r16.qf.sf.gf.win[z,1], playoff.r16.qf.sf.gf.win[z,2]))==8
-playoff.sf.gf.win.good <- playoff.r16.qf.sf.gf.win[idx.good,]
+playoff.sf.gf.win.good <- playoff.qf.sf.gf.win[idx.good,]
 playoff.sf.gf.win.good.fmt <- lapply(1:nrow(playoff.sf.gf.win.good), function(z) Relayout(playoff.sf.gf.win.good[z,]))
-all.player.outcome <- lapply(raw.elim.ordered, function(y) lapply(playoff.sf.gf.win.good.fmt, function(z) sum(apply(z*y,2,sum,na.rm=T)*c(2,4,8,16,32), na.rm=T)))
+all.player.outcome <- lapply(raw.elim.ordered, function(y) lapply(playoff.sf.gf.win.good.fmt, function(z) sum(apply(z*y,2,sum,na.rm=T)*c(4,8,16,32), na.rm=T)))
 names.keep <- names(all.player.outcome)
 all.player.outcome.table <- do.call(cbind, lapply(all.player.outcome, unlist))
-all.player.total.outcome.table <- all.player.outcome.table + data.frame(t(total.total[order(total.total$Name),4]))[rep(1,nrow(all.player.outcome.table)),]
+all.player.total.outcome.table <- all.player.outcome.table + data.frame(t(total.total[order(total.total$Name),5]))[rep(1,nrow(all.player.outcome.table)),]
 colnames(all.player.total.outcome.table) <- names.keep
 all.player.wins <- table(names.keep[apply(all.player.total.outcome.table, 1, which.max)])
 
@@ -245,9 +226,7 @@ diag(win.percs) <- NA
 }
 ```
 
-
 # TLDR Version
-
 
 # Scoreboard
 
@@ -294,67 +273,85 @@ kable(overall.tally[rev(order(overall.tally$Total)),],
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-<!-- # Future Paths To Victory -->
+# Future Paths To Victory
 
-<!-- ## Grand winner -->
+## Grand winner
 
-<!-- Below shows the number of those paths from which each player can win, (assuming nobody gets the bonus of the golden boot). -->
+Below shows the number of those paths from which each player can win.
 
+```{r num of paths, echo=FALSE, results='asis'}
 
-<!-- ```{r num of paths, echo=FALSE, results='asis'} -->
-<!-- all.player.perc <- all.player.wins/sum(all.player.wins) -->
-<!-- all.player.wins <- all.player.wins[rev(order(all.player.wins))] -->
-<!-- kable(all.player.wins, col.names = c('Player','Number of paths to victory')) %>% -->
-<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
-<!-- ``` -->
+all.player.perc <- all.player.wins/sum(all.player.wins)
 
-<!-- ## Must wins -->
+all.player.wins <- all.player.wins[rev(order(all.player.wins))]
 
-<!-- The below table shows which teams must win their next game for you to stay in the comp (again, assumes you don't get the golden boot). -->
+kable(all.player.wins, col.names = c('Player','Number of paths to victory')) %>%
 
-<!-- ```{r stay_alive, include=TRUE, echo=FALSE} -->
-<!-- do_or_die <- lapply(1:length(raw.elim), function(y) apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==y,3],""))), 2, function(z) all(unique(z)=="1"))) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to QF for you to stay in -->
-<!-- names(do_or_die) <- names(raw.elim) -->
-<!-- clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][z], collapse = " & ")))) -->
-<!-- clean_do_or_die[clean_do_or_die[,1]!="",] %>% -->
-<!--   kable(col.names = 'Must win to stay alive') %>% -->
-<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
-<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,2],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to SF for you to stay in -->
-<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,3],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to FINAL for you to stay in -->
-<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,4],""))), 2, function(z) all(unique(z)=="0")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="0") means they are a must NOT WIN for you to be able to have a path to victory. -->
-<!-- ``` -->
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
+```
 
-<!-- ## Who can you still beat? -->
+## Must wins
 
-<!-- Percentage of cases where you beat (or draw with) each player from all possible game outcomes. -->
+The below table shows which teams must win their next game for you to stay in the comp.
 
-<!-- -   Once there is a row where a player hits 100 on every square, they have won. -->
-<!-- -   If there's a non-symmetry between the x and the y axis, those are ties (e.g. if the table indicates Peter beats John 40% of the time, but John beats Peter 30% of the time, that means they must tie 30% of the time.) -->
+```{r stay_alive, include=TRUE, echo=FALSE}
+idx_col <- 1 #just before or during R16
+#idx_col <- 2 #just before or during Qf
+#idx_col <- 3 #just before or during SF
 
-<!-- ```{r corr, echo=FALSE, fig.align="center", out.width="90%"} -->
-<!-- melted_cormat <- melt(win.percs, na.rm = TRUE) -->
-<!-- # Heatmap -->
-<!-- ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value*100))+ -->
-<!--  geom_tile(color = "white")+ -->
-<!--  scale_fill_gradient2(low = "red", high = "blue", mid = "gray75", -->
-<!--    midpoint = 50, limit = c(0,100), space = "Lab", -->
-<!--     name="Percentage\nof\npaths") + -->
-<!--   theme_minimal()+ # minimal theme -->
-<!--  theme(axis.text.x = element_text(angle = 45, vjust = 1, -->
-<!--     size = 12, hjust = 1))+ -->
-<!--  coord_fixed() -->
+do_or_die <- lapply(1:length(raw.elim), function(y) apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==y,idx_col],""))), 2, function(z) all(unique(z)=="1"))) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to QF for you to stay in
 
-<!-- ggheatmap + geom_text(aes(Var2, Var1, label = round(value*100,0)), color = "white", size = 3) + -->
-<!--   xlab('Beats this player') + -->
-<!--   ylab('Proportion of times this player') + -->
-<!-- theme( -->
-<!--   panel.grid.major = element_blank(), -->
-<!--   panel.border = element_blank(), -->
-<!--   panel.background = element_blank(), -->
-<!--   axis.ticks = element_blank()) -->
-<!-- ``` -->
+names(do_or_die) <- names(raw.elim)
 
+clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][z], collapse = " & "))))
+
+clean_do_or_die[clean_do_or_die[,1]!="",] %>%
+
+  kable(col.names = 'Must win to stay alive') %>%
+
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+#apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,2],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to SF for you to stay in
+
+#apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,3],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to FINAL for you to stay in
+
+#apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,4],""))), 2, function(z) all(unique(z)=="0")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="0") means they are a must NOT WIN for you to be able to have a path to victory.
+
+```
+
+## Who can you still beat?
+
+Percentage of cases where you beat (or draw with) each player from all possible game outcomes.
+
+-   Once there is a row where a player hits 100 on every square, they have won.
+
+-   If there's a non-symmetry between the x and the y axis, those are ties (e.g. if the table indicates Peter beats John 40% of the time, but John beats Peter 30% of the time, that means they must tie 30% of the time.)
+
+```{r corr, echo=FALSE, fig.align="center", out.width="90%"}
+melted_cormat <- melt(win.percs, na.rm = TRUE)
+
+# Heatmap
+
+ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value*100))+
+ geom_tile(color = "white")+
+ scale_fill_gradient2(low = "red", high = "blue", mid = "gray75",
+   midpoint = 50, limit = c(0,100), space = "Lab",
+    name="Percentage\nof\npaths") +
+  theme_minimal()+ # minimal theme
+ theme(axis.text.x = element_text(angle = 45, vjust = 1,
+    size = 12, hjust = 1))+
+ coord_fixed()
+
+ggheatmap + geom_text(aes(Var2, Var1, label = round(value*100,0)), color = "white", size = 3) +
+  xlab('Beats this player') +
+  ylab('Proportion of times this player') +
+theme(
+  panel.grid.major = element_blank(),
+  panel.border = element_blank(),
+  panel.background = element_blank(),
+  axis.ticks = element_blank())
+```
 
 ## Group stage worm
 
@@ -381,12 +378,10 @@ ggplot(data=tally.graph.data, aes(x=Match, color=Name, y=Total, label=Name)) +
         panel.grid.minor.x = element_blank())
 ```
 
-
 ```{r tally, echo=FALSE}
 kable(running.total[,c(1,3:5)], col.names = c("Matches Played","Outcomes","Scores","Points")) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
-
 
 ## Upcoming picks
 
