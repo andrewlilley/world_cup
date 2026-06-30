@@ -25,6 +25,8 @@ require(dplyr)
 require(tidyr)
 if (dir.exists('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/')) setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/') #no-op on the github actions runner
 
+eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Germany','Japan')
+
 AddPoints <- function(group.stage.entry, group.stage.truth){
   # 2026: the entry sheets are ordered by group, but results_2026.csv rows are kept
   # in calendar order, so align picks to results by Match number and score the
@@ -93,8 +95,6 @@ ReorderCorMat <- function(cormat){
   hc <- hclust(dd)
   cormat <-cormat[hc$order, hc$order]
 }
-
-eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye')
 ```
 
 ```{r analysis, include=FALSE, cache=TRUE, cache.extra=list(tools::md5sum(c('results_2026.csv','results_elim_2026.csv')), tools::md5sum(list.files(pattern = "World_Cup_2026_.*xlsx", ignore.case = TRUE)))}
@@ -400,6 +400,21 @@ r16.by.team <- aggregate(Name ~ Team, data=r16.picks,
 r16.by.team$n <- lengths(strsplit(r16.by.team$Name, ", "))
 r16.by.team <- r16.by.team[order(-r16.by.team$n, r16.by.team$Team), c('Team','Name')]
 kable(StrikethroughTable(r16.by.team, eliminated.teams),
+      row.names = FALSE,
+      col.names = c("Team","Picked by")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+### Quarter final picks
+
+```{r quarterfinal.picks, echo=FALSE}
+all.elim <- do.call(rbind, raw.elim)
+qf.picks <- all.elim[!is.na(all.elim$Quarter.Finals) & all.elim$Quarter.Finals == 1, c('Team','Name')]
+qf.by.team <- aggregate(Name ~ Team, data=qf.picks,
+                         FUN=function(z) paste(sort(z), collapse=", "))
+qf.by.team$n <- lengths(strsplit(qf.by.team$Name, ", "))
+qf.by.team <- qf.by.team[order(-qf.by.team$n, qf.by.team$Team), c('Team','Name')]
+kable(StrikethroughTable(qf.by.team, eliminated.teams),
       row.names = FALSE,
       col.names = c("Team","Picked by")) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
