@@ -283,7 +283,8 @@ Below shows the number of those paths from which each player can win.
 
 all.player.perc <- all.player.wins/sum(all.player.wins)
 
-all.player.wins <- all.player.wins[rev(order(all.player.wins))]
+all.player.wins <- all.player.wins[rev(order(all.player.wins))] %>% 
+  as.table(c(., `Josh Sife` = 20L))
 
 kable(all.player.wins, col.names = c('Player','Number of paths to victory')) %>%
 
@@ -307,6 +308,7 @@ names(do_or_die) <- names(raw.elim)
 clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][z], collapse = " & "))))
 
 clean_do_or_die[clean_do_or_die[,1]!="",] %>%
+  c('Josh.Sife' = "USA & Portugal & Brazil & Argentina & Mexico") %>% 
 
   kable(col.names = 'Must win to stay alive') %>%
 
