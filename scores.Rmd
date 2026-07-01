@@ -25,7 +25,7 @@ require(dplyr)
 require(tidyr)
 if (dir.exists('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/')) setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/') #no-op on the github actions runner
 
-eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany','Netherlands','Ivory Coast','Sweden')
+eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany','Netherlands','Ivory Coast','Sweden','Ecuador')
 
 AddPoints <- function(group.stage.entry, group.stage.truth){
   # 2026: the entry sheets are ordered by group, but results_2026.csv rows are kept
@@ -283,8 +283,7 @@ Below shows the number of those paths from which each player can win.
 
 all.player.perc <- all.player.wins/sum(all.player.wins)
 
-all.player.wins <- all.player.wins[rev(order(all.player.wins))] %>% 
-  as.table(c(., `Josh Sife` = 20L))
+all.player.wins <- all.player.wins[rev(order(all.player.wins))]
 
 kable(all.player.wins, col.names = c('Player','Number of paths to victory')) %>%
 
