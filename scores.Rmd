@@ -167,10 +167,10 @@ total.total <- total.total[,c('Name','Start','Group.Points','Group.Finish','Roun
 knockout.bracket.known <- TRUE # set TRUE once the Round of 32 bracket is set (groups complete) and fill in r32.bracket.order below
 if (knockout.bracket.known) {
   playoff.format <- read.csv('playoff_format.csv')
-  playoff.format$Team <- raw.elim[[1]][c(5,10,14,33,25,13,29,41,9,35,18,45,6,42,15,37),c(1)]
+  playoff.format$Team <- raw.elim[[1]][c(5,10,14,33,25,13,29,41,9,35,1,45,6,42,15,37),c(1)]
 # MAKE SURE YOU EDIT THIS NEXT LINE SUCH THAT IT IS IN THE ORDER OF A KNOCKOUT GRAPH
 # CHECK raw.elim[[1]][c(5,21,14,33,25,13,29,41,9,35,18,45,6,42,15,37),c(1)]
-raw.elim.ordered <- lapply(raw.elim, function(z) z[c(5,10,14,33,25,13,29,41,9,35,18,45,6,42,15,37),c(6:9)]) #see round_16_format.png. since the "bracket" for round of 16 is Uruguay v Portugal and France v Argentina... we select an ordered table of Uruguay, Portugal, France, Argentina, so the possibility for the SF is 1000, 0100, 0010, 0001 etc. 
+raw.elim.ordered <- lapply(raw.elim, function(z) z[c(5,10,14,33,25,13,29,41,9,35,1,45,6,42,15,37),c(6:9)]) #see round_16_format.png. since the "bracket" for round of 16 is Uruguay v Portugal and France v Argentina... we select an ordered table of Uruguay, Portugal, France, Argentina, so the possibility for the SF is 1000, 0100, 0010, 0001 etc. 
 x.qf <- c('10', '01') # for every game, this is the combination of team 1 win vs team 2 win
 x.sf <- c('1000','0100','0010','0001') # only one of each 4 can make the sf
 x.gf <- sapply(0:7, function(z) paste(c(rep(0,z),1,rep(0,7-z)),collapse=''))
@@ -307,7 +307,7 @@ names(do_or_die) <- names(raw.elim)
 clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][z], collapse = " & "))))
 
 clean_do_or_die[clean_do_or_die[,1]!="",] %>%
-  c('Josh.Sife' = "USA & Portugal & Brazil & Argentina & Mexico") %>% 
+  c('Blake' = "Paraguay & Portugal & (One of Australia / Switzerland)") %>% 
 
   kable(col.names = 'Must win to stay alive') %>%
 
