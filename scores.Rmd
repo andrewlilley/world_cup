@@ -307,7 +307,6 @@ names(do_or_die) <- names(raw.elim)
 clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][z], collapse = " & "))))
 
 clean_do_or_die[clean_do_or_die[,1]!="",] %>%
-  c('Blake' = "Paraguay & Portugal & (One of Australia / Switzerland)") %>% 
 
   kable(col.names = 'Must win to stay alive') %>%
 
