@@ -385,21 +385,6 @@ kable(running.total[,c(1,3:5)], col.names = c("Matches Played","Outcomes","Score
 
 ## Upcoming picks
 
-### Round 16 picks
-
-```{r round16.picks, echo=FALSE}
-all.elim <- do.call(rbind, raw.elim)
-r16.picks <- all.elim[!is.na(all.elim$Round.of.16) & all.elim$Round.of.16 == 1, c('Team','Name')]
-r16.by.team <- aggregate(Name ~ Team, data=r16.picks,
-                         FUN=function(z) paste(sort(z), collapse=", "))
-r16.by.team$n <- lengths(strsplit(r16.by.team$Name, ", "))
-r16.by.team <- r16.by.team[order(-r16.by.team$n, r16.by.team$Team), c('Team','Name')]
-kable(StrikethroughTable(r16.by.team, eliminated.teams),
-      row.names = FALSE,
-      col.names = c("Team","Picked by")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-```
-
 ### Quarter final picks
 
 ```{r quarterfinal.picks, echo=FALSE}
