@@ -25,6 +25,10 @@ require(dplyr)
 require(tidyr)
 if (dir.exists('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/')) setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/') #no-op on the github actions runner
 
+#canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, Argentina, egypt
+#idx.playoff.qf.outcomes.remaining <- rep(TRUE, length(playoff.qf.outcomes)) #when nothing has been determined
+idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,2) == "01"  # when some outcomes are determined
+
 eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany','Netherlands','Ivory Coast','Sweden','Ecuador')
 
 AddPoints <- function(group.stage.entry, group.stage.truth){
@@ -199,9 +203,7 @@ playoff.sf.gf.win.good <- playoff.sf.gf.win[idx.good,]
 
 #Possible qf, sf, gf, win combs.
 #Check the format of playoff.format to understand this. E.g. if teams 1 and 3 of the first 4 win their R32 games it starts 1010 etc.
-#canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, Argentina, egypt
-idx.playoff.qf.outcomes.remaining <- rep(TRUE, length(playoff.qf.outcomes)) #when nothing has been determined
-#idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,16) == "..."  # when some outcomes are determined
+#paste here
 #idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "..." #when its over
 playoff.qf.sf.gf.win <- data.frame(lapply(expand.grid(playoff.qf.outcomes[idx.playoff.qf.outcomes.remaining], apply(playoff.sf.gf.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.qf.sf.gf.win) <- c('Quarter','Semi')
