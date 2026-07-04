@@ -185,6 +185,7 @@ playoff.gf.and.win <- data.frame(lapply(expand.grid(playoff.gf.outcomes, playoff
 idx.good <- sapply(1:nrow(playoff.gf.and.win), function(z) CountStringDiff(playoff.gf.and.win[z,1], playoff.gf.and.win[z,2]))==1
 playoff.gf.and.win.good <- playoff.gf.and.win[idx.good,]
 
+#canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, Argentina, egypt
 #Possible sf, gf, win combs.
 idx.playoff.sf.outcomes.remaining <- rep(TRUE, length(playoff.sf.outcomes)) #when nothing has been determined
 #idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,16) == "..." # when some outcomes are determined
@@ -198,6 +199,7 @@ playoff.sf.gf.win.good <- playoff.sf.gf.win[idx.good,]
 
 #Possible qf, sf, gf, win combs.
 #Check the format of playoff.format to understand this. E.g. if teams 1 and 3 of the first 4 win their R32 games it starts 1010 etc.
+#canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, Argentina, egypt
 idx.playoff.qf.outcomes.remaining <- rep(TRUE, length(playoff.qf.outcomes)) #when nothing has been determined
 #idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,16) == "..."  # when some outcomes are determined
 #idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "..." #when its over
