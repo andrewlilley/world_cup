@@ -201,7 +201,7 @@ playoff.sf.gf.win.good <- playoff.sf.gf.win[idx.good,]
 #Check the format of playoff.format to understand this. E.g. if teams 1 and 3 of the first 4 win their R32 games it starts 1010 etc.
 #canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, Argentina, egypt
 #idx.playoff.qf.outcomes.remaining <- rep(TRUE, length(playoff.qf.outcomes)) #when nothing has been determined
-idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,4) == "0101"  # when some outcomes are determined
+idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,4) == "0101" & substr(playoff.qf.outcomes,9,10) == "01"  # when some outcomes are determined
 #idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "..." #when its over
 playoff.qf.sf.gf.win <- data.frame(lapply(expand.grid(playoff.qf.outcomes[idx.playoff.qf.outcomes.remaining], apply(playoff.sf.gf.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.qf.sf.gf.win) <- c('Quarter','Semi')
