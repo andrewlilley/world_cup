@@ -298,15 +298,16 @@ kable(all.player.wins, col.names = c('Player','Number of paths to victory')) %>%
 The below table shows which teams must win their next game for you to stay in the comp.
 
 ```{r stay_alive, include=TRUE, echo=FALSE}
-idx_col <- 1 #just before or during R16
-#idx_col <- 2 #just before or during Qf
+idx_col <- 1 #just before or during R16 not really sure
+#idx_col <- 2 #just before or during Qf not really sure
 #idx_col <- 3 #just before or during SF
 
 do_or_die <- lapply(1:length(raw.elim), function(y) apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==y,idx_col],""))), 2, function(z) all(unique(z)=="1"))) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to QF for you to stay in
 
 names(do_or_die) <- names(raw.elim)
-
-clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][z], collapse = " & "))))
+do_or_die <- do_or_die[sapply(do_or_die, function(x) length(x)) > 0]
+contested <- apply(do.call(rbind, do_or_die), 2, function(x) length(unique(x)) > 1)
+clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][unlist(z) & contested], collapse = " & "))))
 
 clean_do_or_die[clean_do_or_die[,1]!="",] %>%
 
@@ -397,6 +398,20 @@ qf.by.team <- aggregate(Name ~ Team, data=qf.picks,
 qf.by.team$n <- lengths(strsplit(qf.by.team$Name, ", "))
 qf.by.team <- qf.by.team[order(-qf.by.team$n, qf.by.team$Team), c('Team','Name')]
 kable(StrikethroughTable(qf.by.team, eliminated.teams),
+      row.names = FALSE,
+      col.names = c("Team","Picked by")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+### Semi final picks
+
+```{r semifinal.picks, echo=FALSE}
+all.elim <- do.call(rbind, raw.elim)
+sf.picks <- all.elim[!is.na(all.elim$Semi.Finals) & all.elim$Semi.Finals == 1, c('Team','Name')]
+sf.by.team <- aggregate(Name ~ Team, data=sf.picks,
+                         FUN=function(z) paste(sort(z), collapse=", "))
+sf.by.team$n <- lengths(strsplit(sf.by.team$Name, ", "))
+sf.by.team <- sf.by.team[order(-sf.by.team$n, sf.by.team$Team), c('Team','Name')]
+kable(StrikethroughTable(sf.by.team, eliminated.teams),
       row.names = FALSE,
       col.names = c("Team","Picked by")) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
