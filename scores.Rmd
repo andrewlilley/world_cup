@@ -81,7 +81,11 @@ FourthString <- function(my.string){
 }
 
 Relayout <- function(results){
-  t(sapply(seq(1:32), function(x) as.numeric(substring(results, x, x))))
+  # one row per bracket team; derive the count from the outcome-string length
+  # (16 in the Round-of-16 sim) so it can't go stale like the old hard-coded 32,
+  # which mis-aligned SF/Final/Winner scoring once the bracket shrank below 32
+  n <- nchar(as.character(results)[1])
+  t(sapply(seq_len(n), function(x) as.numeric(substring(results, x, x))))
 }
 
 GetLowerTri <- function(cormat){
@@ -167,10 +171,10 @@ total.total <- total.total[,c('Name','Start','Group.Points','Group.Finish','Roun
 knockout.bracket.known <- TRUE # set TRUE once the Round of 32 bracket is set (groups complete) and fill in r32.bracket.order below
 if (knockout.bracket.known) {
   playoff.format <- read.csv('playoff_format.csv')
-  playoff.format$Team <- raw.elim[[1]][c(5,10,14,33,25,13,29,41,9,35,1,45,6,42,15,37),c(1)]
+  playoff.format$Team <- raw.elim[[1]][c(5,10,14,33,13,25,41,29,9,35,1,45,6,42,15,37),c(1)]
 # MAKE SURE YOU EDIT THIS NEXT LINE SUCH THAT IT IS IN THE ORDER OF A KNOCKOUT GRAPH
 # CHECK raw.elim[[1]][c(5,21,14,33,25,13,29,41,9,35,18,45,6,42,15,37),c(1)]
-raw.elim.ordered <- lapply(raw.elim, function(z) z[c(5,10,14,33,25,13,29,41,9,35,1,45,6,42,15,37),c(6:9)]) #see round_16_format.png. since the "bracket" for round of 16 is Uruguay v Portugal and France v Argentina... we select an ordered table of Uruguay, Portugal, France, Argentina, so the possibility for the SF is 1000, 0100, 0010, 0001 etc. 
+raw.elim.ordered <- lapply(raw.elim, function(z) z[c(5,10,14,33,13,25,41,29,9,35,1,45,6,42,15,37),c(6:9)]) #see round_16_format.png. since the "bracket" for round of 16 is Uruguay v Portugal and France v Argentina... we select an ordered table of Uruguay, Portugal, France, Argentina, so the possibility for the SF is 1000, 0100, 0010, 0001 etc. 
 x.qf <- c('10', '01') # for every game, this is the combination of team 1 win vs team 2 win
 x.sf <- c('1000','0100','0010','0001') # only one of each 4 can make the sf
 x.gf <- sapply(0:7, function(z) paste(c(rep(0,z),1,rep(0,7-z)),collapse=''))
@@ -216,7 +220,14 @@ names.keep <- names(all.player.outcome)
 all.player.outcome.table <- do.call(cbind, lapply(all.player.outcome, unlist))
 all.player.total.outcome.table <- all.player.outcome.table + data.frame(t(total.total[order(total.total$Name),5]))[rep(1,nrow(all.player.outcome.table)),]
 colnames(all.player.total.outcome.table) <- names.keep
-all.player.wins <- table(names.keep[apply(all.player.total.outcome.table, 1, which.max)])
+all.player.wins <- table(names.keep[apply(all.player.total.outcome.table, 1, which.max)]) # kept for the must-wins chunk
+# split each remaining path's leader(s) into a sole (outright) win vs a shared 1st (tie)
+tot.mat <- as.matrix(all.player.total.outcome.table)
+row.max <- apply(tot.mat, 1, max)
+is.at.max <- tot.mat == row.max
+n.leaders <- rowSums(is.at.max)
+outright.wins <- colSums(is.at.max & n.leaders == 1)
+tied.wins     <- colSums(is.at.max & n.leaders >  1)
 
 win.percs <- do.call(rbind,
                       lapply(1:length(raw.entries), function(z)
@@ -279,15 +290,20 @@ kable(overall.tally[rev(order(overall.tally$Total)),],
 
 ## Grand winner
 
-Below shows the number of those paths from which each player can win.
+Below shows, of all remaining paths, how many each player wins outright (sole
+highest score) versus ties for first (level with at least one other player).
 
 ```{r num of paths, echo=FALSE, results='asis'}
 
-all.player.perc <- all.player.wins/sum(all.player.wins)
+paths.to.victory <- data.frame(Player = names(outright.wins),
+                               Outright = as.integer(outright.wins),
+                               Tied = as.integer(tied.wins),
+                               stringsAsFactors = FALSE)
+paths.to.victory <- paths.to.victory[paths.to.victory$Outright + paths.to.victory$Tied > 0,] # drop players who can no longer win or tie
+paths.to.victory <- paths.to.victory[rev(order(paths.to.victory$Outright, paths.to.victory$Tied)),]
 
-all.player.wins <- all.player.wins[rev(order(all.player.wins))]
-
-kable(all.player.wins, col.names = c('Player','Number of paths to victory')) %>%
+kable(paths.to.victory, row.names = FALSE,
+      col.names = c('Player','Outright win','Tied win')) %>%
 
   kable_styling(bootstrap_options = c("striped", "hover"))
 
