@@ -189,7 +189,7 @@ playoff.gf.and.win <- data.frame(lapply(expand.grid(playoff.gf.outcomes, playoff
 idx.good <- sapply(1:nrow(playoff.gf.and.win), function(z) CountStringDiff(playoff.gf.and.win[z,1], playoff.gf.and.win[z,2]))==1
 playoff.gf.and.win.good <- playoff.gf.and.win[idx.good,]
 
-#canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, Argentina, egypt
+#canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, egypt, argentina
 #Possible sf, gf, win combs.
 idx.playoff.sf.outcomes.remaining <- rep(TRUE, length(playoff.sf.outcomes)) #when nothing has been determined
 #idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,16) == "..." # when some outcomes are determined
@@ -203,9 +203,9 @@ playoff.sf.gf.win.good <- playoff.sf.gf.win[idx.good,]
 
 #Possible qf, sf, gf, win combs.
 #Check the format of playoff.format to understand this. E.g. if teams 1 and 3 of the first 4 win their R32 games it starts 1010 etc.
-#canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, Argentina, egypt
+#canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, egypt, argentina
 #idx.playoff.qf.outcomes.remaining <- rep(TRUE, length(playoff.qf.outcomes)) #when nothing has been determined
-idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,12) == "010101010101"
+idx.playoff.qf.outcomes.remaining <- substr(playoff.qf.outcomes,1,12) == "010101010101" & substr(playoff.qf.outcomes,15,16) == "01"
 #idx.playoff.qf.outcomes.remaining <- playoff.qf.outcomes == "..." #when its over
 playoff.qf.sf.gf.win <- data.frame(lapply(expand.grid(playoff.qf.outcomes[idx.playoff.qf.outcomes.remaining], apply(playoff.sf.gf.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.qf.sf.gf.win) <- c('Quarter','Semi')
@@ -237,6 +237,7 @@ win.percs <- do.call(rbind,
 rownames(win.percs) <- colnames(win.percs)
 diag(win.percs) <- NA
 }
+#playoff.sf.gf.win.good[all.player.total.outcome.table$andrew < apply(all.player.total.outcome.table,1,max),]
 ```
 
 # TLDR Version
@@ -294,7 +295,16 @@ Below shows, of all remaining paths, how many each player wins outright (sole
 highest score) versus ties for first (level with at least one other player).
 
 ```{r num of paths, echo=FALSE, results='asis'}
-
+#andrew wins if Argentina win, or where Spain and Argentina make the final
+#sammy wins 75% of cases if England and Spain make the final, and Spain wins the final. in that case, it cannot be that both Argentina and France make the semis (6 paths)
+#sammy wins if Morocco and England make the final and Morocco wins (8 paths)
+#sammy wins if Belgium and England make the final and Belgium wins, so long as Morocco beats France (4 paths)
+#adrian usually wins if England and Spain make the final, and England wins the final
+#pickers usually wins if England and Argentina make the semi final in the same bracket, and England wins the final
+#elliott wins if France win and Egypt/Switzerland/Colombia/Norway make the final. some paths where england does.
+#will wins if France and Argentina makes the final and France wins
+#if Morocco/Belgium/Norway/Egypt/Colombia/Switzerland win, and France do NOT make the final, Moodeng wins
+#if Morocco/Belgium/Norway/Egypt/Colombia/Switzerland win, and France do make the final, harro wins 
 paths.to.victory <- data.frame(Player = names(outright.wins),
                                Outright = as.integer(outright.wins),
                                Tied = as.integer(tied.wins),
@@ -314,8 +324,8 @@ kable(paths.to.victory, row.names = FALSE,
 The below table shows which teams must win their next game for you to stay in the comp.
 
 ```{r stay_alive, include=TRUE, echo=FALSE}
-idx_col <- 1 #just before or during R16 not really sure
-#idx_col <- 2 #just before or during Qf not really sure
+#idx_col <- 1 #just before or during R16 
+idx_col <- 2 #just before or during Qf not really sure
 #idx_col <- 3 #just before or during SF
 
 do_or_die <- lapply(1:length(raw.elim), function(y) apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==y,idx_col],""))), 2, function(z) all(unique(z)=="1"))) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to QF for you to stay in
@@ -404,20 +414,20 @@ kable(running.total[,c(1,3:5)], col.names = c("Matches Played","Outcomes","Score
 
 ## Upcoming picks
 
-### Quarter final picks
+<!-- ### Quarter final picks -->
 
-```{r quarterfinal.picks, echo=FALSE}
-all.elim <- do.call(rbind, raw.elim)
-qf.picks <- all.elim[!is.na(all.elim$Quarter.Finals) & all.elim$Quarter.Finals == 1, c('Team','Name')]
-qf.by.team <- aggregate(Name ~ Team, data=qf.picks,
-                         FUN=function(z) paste(sort(z), collapse=", "))
-qf.by.team$n <- lengths(strsplit(qf.by.team$Name, ", "))
-qf.by.team <- qf.by.team[order(-qf.by.team$n, qf.by.team$Team), c('Team','Name')]
-kable(StrikethroughTable(qf.by.team, eliminated.teams),
-      row.names = FALSE,
-      col.names = c("Team","Picked by")) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-```
+<!-- ```{r quarterfinal.picks, echo=FALSE} -->
+<!-- all.elim <- do.call(rbind, raw.elim) -->
+<!-- qf.picks <- all.elim[!is.na(all.elim$Quarter.Finals) & all.elim$Quarter.Finals == 1, c('Team','Name')] -->
+<!-- qf.by.team <- aggregate(Name ~ Team, data=qf.picks, -->
+<!--                          FUN=function(z) paste(sort(z), collapse=", ")) -->
+<!-- qf.by.team$n <- lengths(strsplit(qf.by.team$Name, ", ")) -->
+<!-- qf.by.team <- qf.by.team[order(-qf.by.team$n, qf.by.team$Team), c('Team','Name')] -->
+<!-- kable(StrikethroughTable(qf.by.team, eliminated.teams), -->
+<!--       row.names = FALSE, -->
+<!--       col.names = c("Team","Picked by")) %>% -->
+<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
+<!-- ``` -->
 ### Semi final picks
 
 ```{r semifinal.picks, echo=FALSE}
