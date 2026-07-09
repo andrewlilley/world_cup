@@ -25,7 +25,7 @@ require(dplyr)
 require(tidyr)
 if (dir.exists('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/')) setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/') #no-op on the github actions runner
 
-eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany','Netherlands','Ivory Coast','Sweden','Ecuador','Brazil','Mexico','Portugal','USA')
+eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany','Netherlands','Ivory Coast','Sweden','Ecuador','Brazil','Mexico','Portugal','USA','Morocco')
 
 AddPoints <- function(group.stage.entry, group.stage.truth){
   # 2026: the entry sheets are ordered by group, but results_2026.csv rows are kept
@@ -191,8 +191,8 @@ playoff.gf.and.win.good <- playoff.gf.and.win[idx.good,]
 
 #canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, egypt, argentina
 #Possible sf, gf, win combs.
-idx.playoff.sf.outcomes.remaining <- rep(TRUE, length(playoff.sf.outcomes)) #when nothing has been determined
-#idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,16) == "..." # when some outcomes are determined
+#idx.playoff.sf.outcomes.remaining <- rep(TRUE, length(playoff.sf.outcomes)) #when nothing has been determined
+idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,4) == "0001" # when some outcomes are determined
 #idx.playoff.sf.outcomes.remaining <- playoff.sf.outcomes == "..." #when its over
 playoff.sf.gf.win <- data.frame(lapply(expand.grid(playoff.sf.outcomes[idx.playoff.sf.outcomes.remaining], apply(playoff.gf.and.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.sf.gf.win) <- c('Semi','Final')
@@ -301,7 +301,7 @@ highest score) versus ties for first (level with at least one other player).
 #sammy wins if Belgium and England make the final and Belgium wins, so long as Morocco beats France (4 paths)
 #adrian usually wins if England and Spain make the final, and England wins the final
 #pickers usually wins if England and Argentina make the semi final in the same bracket, and England wins the final
-#elliott wins if France win and Egypt/Switzerland/Colombia/Norway make the final. some paths where england does.
+#elliott wins if France win and Switzerland/Norway make the final
 #will wins if France and Argentina makes the final and France wins
 #if Morocco/Belgium/Norway/Egypt/Colombia/Switzerland win, and France do NOT make the final, Moodeng wins
 #if Morocco/Belgium/Norway/Egypt/Colombia/Switzerland win, and France do make the final, harro wins 
