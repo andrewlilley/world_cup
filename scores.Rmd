@@ -192,7 +192,7 @@ playoff.gf.and.win.good <- playoff.gf.and.win[idx.good,]
 #canada, morocco, Paraguay, France, USA, Belgium, Portugal, Spain, Brazil, Norway, Mexico, England, Switzerland, Colombia, egypt, argentina
 #Possible sf, gf, win combs.
 #idx.playoff.sf.outcomes.remaining <- rep(TRUE, length(playoff.sf.outcomes)) #when nothing has been determined
-idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,4) == "0001" # when some outcomes are determined
+idx.playoff.sf.outcomes.remaining <- substr(playoff.sf.outcomes,1,4) == "00010001" # when some outcomes are determined
 #idx.playoff.sf.outcomes.remaining <- playoff.sf.outcomes == "..." #when its over
 playoff.sf.gf.win <- data.frame(lapply(expand.grid(playoff.sf.outcomes[idx.playoff.sf.outcomes.remaining], apply(playoff.gf.and.win.good,1,paste,collapse=" ")), as.character), stringsAsFactors=FALSE)
 names(playoff.sf.gf.win) <- c('Semi','Final')
