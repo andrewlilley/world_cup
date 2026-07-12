@@ -325,8 +325,8 @@ The below table shows which teams must win their next game for you to stay in th
 
 ```{r stay_alive, include=TRUE, echo=FALSE}
 #idx_col <- 1 #just before or during R16 
-idx_col <- 2 #just before or during Qf not really sure
-#idx_col <- 3 #just before or during SF
+#idx_col <- 2 #just before or during Qf not really sure
+idx_col <- 3 #just before or during SF
 
 do_or_die <- lapply(1:length(raw.elim), function(y) apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==y,idx_col],""))), 2, function(z) all(unique(z)=="1"))) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to QF for you to stay in
 
