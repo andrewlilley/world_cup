@@ -289,7 +289,9 @@ kable(overall.tally[rev(order(overall.tally$Total)),],
 
 # Future Paths To Victory
 
-* Harro wins if Spain wins. Josh Sife gets the spoon.
+* Harro wins if Spain wins. 
+  * Josh Sife gets the spoon if England made the final
+  * pickers gets the spoon of Argentina made the final
 * Adrian wins if England wins. Josh Sife gets the spoon.
 * Andrew wins if Argentina wins. Pickers gets the spoon.
 
