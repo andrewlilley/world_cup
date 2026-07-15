@@ -25,7 +25,7 @@ require(dplyr)
 require(tidyr)
 if (dir.exists('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/')) setwd('/Users/andrew/Githubs/Coding/World Cup/world_cup_2026/') #no-op on the github actions runner
 
-eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany','Netherlands','Ivory Coast','Sweden','Ecuador','Brazil','Mexico','Portugal','USA','Morocco')
+eliminated.teams <- c('South Africa','Uruguay','South Korea','Turkiye','Japan','Germany','Netherlands','Ivory Coast','Sweden','Ecuador','Brazil','Mexico','Portugal','USA','Morocco','Belgium','France','Norway','Switzerland')
 
 AddPoints <- function(group.stage.entry, group.stage.truth){
   # 2026: the entry sheets are ordered by group, but results_2026.csv rows are kept
@@ -289,98 +289,102 @@ kable(overall.tally[rev(order(overall.tally$Total)),],
 
 # Future Paths To Victory
 
-## Grand winner
+* Harro wins if Spain wins. Josh Sife gets the spoon.
+* Adrian wins if England wins. Josh Sife gets the spoon.
+* Andrew wins if Argentina wins. Pickers gets the spoon.
 
-Below shows, of all remaining paths, how many each player wins outright (sole
-highest score) versus ties for first (level with at least one other player).
+<!-- ## Grand winner -->
 
-```{r num of paths, echo=FALSE, results='asis'}
-#andrew wins if Argentina win, or where Spain and Argentina make the final
-#sammy wins 75% of cases if England and Spain make the final, and Spain wins the final. in that case, it cannot be that both Argentina and France make the semis (6 paths)
-#sammy wins if Morocco and England make the final and Morocco wins (8 paths)
-#sammy wins if Belgium and England make the final and Belgium wins, so long as Morocco beats France (4 paths)
-#adrian usually wins if England and Spain make the final, and England wins the final
-#pickers usually wins if England and Argentina make the semi final in the same bracket, and England wins the final
-#elliott wins if France win and Switzerland/Norway make the final
-#will wins if France and Argentina makes the final and France wins
-#if Morocco/Belgium/Norway/Egypt/Colombia/Switzerland win, and France do NOT make the final, Moodeng wins
-#if Morocco/Belgium/Norway/Egypt/Colombia/Switzerland win, and France do make the final, harro wins 
-paths.to.victory <- data.frame(Player = names(outright.wins),
-                               Outright = as.integer(outright.wins),
-                               Tied = as.integer(tied.wins),
-                               stringsAsFactors = FALSE)
-paths.to.victory <- paths.to.victory[paths.to.victory$Outright + paths.to.victory$Tied > 0,] # drop players who can no longer win or tie
-paths.to.victory <- paths.to.victory[rev(order(paths.to.victory$Outright, paths.to.victory$Tied)),]
+<!-- Below shows, of all remaining paths, how many each player wins outright (sole -->
+<!-- highest score) versus ties for first (level with at least one other player). -->
 
-kable(paths.to.victory, row.names = FALSE,
-      col.names = c('Player','Outright win','Tied win')) %>%
+<!-- ```{r num of paths, echo=FALSE, results='asis'} -->
+<!-- #andrew wins if Argentina win, or where Spain and Argentina make the final -->
+<!-- #sammy wins 75% of cases if England and Spain make the final, and Spain wins the final. in that case, it cannot be that both Argentina and France make the semis (6 paths) -->
+<!-- #sammy wins if Morocco and England make the final and Morocco wins (8 paths) -->
+<!-- #sammy wins if Belgium and England make the final and Belgium wins, so long as Morocco beats France (4 paths) -->
+<!-- #adrian usually wins if England and Spain make the final, and England wins the final -->
+<!-- #pickers usually wins if England and Argentina make the semi final in the same bracket, and England wins the final -->
+<!-- #elliott wins if France win and Switzerland/Norway make the final -->
+<!-- #will wins if France and Argentina makes the final and France wins -->
+<!-- #if Morocco/Belgium/Norway/Egypt/Colombia/Switzerland win, and France do NOT make the final, Moodeng wins -->
+<!-- #if Morocco/Belgium/Norway/Egypt/Colombia/Switzerland win, and France do make the final, harro wins  -->
+<!-- paths.to.victory <- data.frame(Player = names(outright.wins), -->
+<!--                                Outright = as.integer(outright.wins), -->
+<!--                                Tied = as.integer(tied.wins), -->
+<!--                                stringsAsFactors = FALSE) -->
+<!-- paths.to.victory <- paths.to.victory[paths.to.victory$Outright + paths.to.victory$Tied > 0,] # drop players who can no longer win or tie -->
+<!-- paths.to.victory <- paths.to.victory[rev(order(paths.to.victory$Outright, paths.to.victory$Tied)),] -->
 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+<!-- kable(paths.to.victory, row.names = FALSE, -->
+<!--       col.names = c('Player','Outright win','Tied win')) %>% -->
 
-```
+<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
 
-## Must wins
+<!-- ``` -->
 
-The below table shows which teams must win their next game for you to stay in the comp.
+<!-- ## Must wins -->
 
-```{r stay_alive, include=TRUE, echo=FALSE}
-#idx_col <- 1 #just before or during R16 
-#idx_col <- 2 #just before or during Qf not really sure
-idx_col <- 3 #just before or during SF
+<!-- The below table shows which teams must win their next game for you to stay in the comp. -->
 
-do_or_die <- lapply(1:length(raw.elim), function(y) apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==y,idx_col],""))), 2, function(z) all(unique(z)=="1"))) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to QF for you to stay in
+<!-- ```{r stay_alive, include=TRUE, echo=FALSE} -->
+<!-- #idx_col <- 1 #just before or during R16  -->
+<!-- #idx_col <- 2 #just before or during Qf not really sure -->
+<!-- idx_col <- 3 #just before or during SF -->
 
-names(do_or_die) <- names(raw.elim)
-do_or_die <- do_or_die[sapply(do_or_die, function(x) length(x)) > 0]
-contested <- apply(do.call(rbind, do_or_die), 2, function(x) length(unique(x)) > 1)
-clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][unlist(z) & contested], collapse = " & "))))
+<!-- do_or_die <- lapply(1:length(raw.elim), function(y) apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==y,idx_col],""))), 2, function(z) all(unique(z)=="1"))) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to QF for you to stay in -->
 
-clean_do_or_die[clean_do_or_die[,1]!="",] %>%
+<!-- names(do_or_die) <- names(raw.elim) -->
+<!-- do_or_die <- do_or_die[sapply(do_or_die, function(x) length(x)) > 0] -->
+<!-- contested <- apply(do.call(rbind, do_or_die), 2, function(x) length(unique(x)) > 1) -->
+<!-- clean_do_or_die <- t(do.call(data.frame, lapply(do_or_die, function(z) paste(playoff.format[,1][unlist(z) & contested], collapse = " & ")))) -->
 
-  kable(col.names = 'Must win to stay alive') %>%
+<!-- clean_do_or_die[clean_do_or_die[,1]!="",] %>% -->
 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+<!--   kable(col.names = 'Must win to stay alive') %>% -->
 
-#apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,2],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to SF for you to stay in
+<!--   kable_styling(bootstrap_options = c("striped", "hover")) -->
 
-#apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,3],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to FINAL for you to stay in
+<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,2],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to SF for you to stay in -->
 
-#apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,4],""))), 2, function(z) all(unique(z)=="0")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="0") means they are a must NOT WIN for you to be able to have a path to victory.
+<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,3],""))), 2, function(z) all(unique(z)=="1")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="1") means they are a must advance to FINAL for you to stay in -->
 
-```
+<!-- #apply(data.frame(do.call(rbind, strsplit(playoff.sf.gf.win.good[apply(all.player.total.outcome.table, 1, which.max)==1,4],""))), 2, function(z) all(unique(z)=="0")) # which.max)==1 means "a_lills" wins, and then all(unique(z)=="0") means they are a must NOT WIN for you to be able to have a path to victory. -->
 
-## Who can you still beat?
+<!-- ``` -->
 
-Percentage of cases where you beat (or draw with) each player from all possible game outcomes.
+<!-- ## Who can you still beat? -->
 
--   Once there is a row where a player hits 100 on every square, they have won.
+<!-- Percentage of cases where you beat (or draw with) each player from all possible game outcomes. -->
 
--   If there's a non-symmetry between the x and the y axis, those are ties (e.g. if the table indicates Peter beats John 40% of the time, but John beats Peter 30% of the time, that means they must tie 30% of the time.)
+<!-- -   Once there is a row where a player hits 100 on every square, they have won. -->
 
-```{r corr, echo=FALSE, fig.align="center", out.width="90%"}
-melted_cormat <- melt(win.percs, na.rm = TRUE)
+<!-- -   If there's a non-symmetry between the x and the y axis, those are ties (e.g. if the table indicates Peter beats John 40% of the time, but John beats Peter 30% of the time, that means they must tie 30% of the time.) -->
 
-# Heatmap
+<!-- ```{r corr, echo=FALSE, fig.align="center", out.width="90%"} -->
+<!-- melted_cormat <- melt(win.percs, na.rm = TRUE) -->
 
-ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value*100))+
- geom_tile(color = "white")+
- scale_fill_gradient2(low = "red", high = "blue", mid = "gray75",
-   midpoint = 50, limit = c(0,100), space = "Lab",
-    name="Percentage\nof\npaths") +
-  theme_minimal()+ # minimal theme
- theme(axis.text.x = element_text(angle = 45, vjust = 1,
-    size = 12, hjust = 1))+
- coord_fixed()
+<!-- # Heatmap -->
 
-ggheatmap + geom_text(aes(Var2, Var1, label = round(value*100,0)), color = "white", size = 3) +
-  xlab('Beats this player') +
-  ylab('Proportion of times this player') +
-theme(
-  panel.grid.major = element_blank(),
-  panel.border = element_blank(),
-  panel.background = element_blank(),
-  axis.ticks = element_blank())
-```
+<!-- ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value*100))+ -->
+<!--  geom_tile(color = "white")+ -->
+<!--  scale_fill_gradient2(low = "red", high = "blue", mid = "gray75", -->
+<!--    midpoint = 50, limit = c(0,100), space = "Lab", -->
+<!--     name="Percentage\nof\npaths") + -->
+<!--   theme_minimal()+ # minimal theme -->
+<!--  theme(axis.text.x = element_text(angle = 45, vjust = 1, -->
+<!--     size = 12, hjust = 1))+ -->
+<!--  coord_fixed() -->
+
+<!-- ggheatmap + geom_text(aes(Var2, Var1, label = round(value*100,0)), color = "white", size = 3) + -->
+<!--   xlab('Beats this player') + -->
+<!--   ylab('Proportion of times this player') + -->
+<!-- theme( -->
+<!--   panel.grid.major = element_blank(), -->
+<!--   panel.border = element_blank(), -->
+<!--   panel.background = element_blank(), -->
+<!--   axis.ticks = element_blank()) -->
+<!-- ``` -->
 
 ## Group stage worm
 
